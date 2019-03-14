@@ -22,7 +22,7 @@ void init(void) {
   glClearColor (0.0, 0.0, 0.0, 0.0);
 }
 
-void Keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int x, int y) {
   // Add regular keyboard functions here
 }
 

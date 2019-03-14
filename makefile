@@ -10,3 +10,9 @@ All: main
 
 main: main.o
 	$(CC) $(CFLAGS) -o $@ $(LIBDIR) $< $(LIBRARIES)
+
+clean:
+	rm *.o
+
+clean-all:
+	rm *.o main
