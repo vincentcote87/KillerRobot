@@ -1,9 +1,14 @@
-#define PROGRAM_TITLE "Demo for OpenGL"
-#define DISPLAY_INFO "First OpenGL Program"
+//Author: Darsh Thanki (001182949)
+//Date: March 15, 2019
+//This file is a test file to visualize a created building.
+
+#define PROGRAM_TITLE "Building Demo for Killer Robots"
+#define DISPLAY_INFO "Rect Building Test"
 
 #include <stdlib.h>  // Useful for the following includes.
 #include <stdio.h>
 #include <string.h>  // For spring operations.
+#include "building.h" //Include the building class
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -29,10 +34,9 @@ float X_Speed = 0.0f;  // the rotation.
 float Y_Speed = 0.05f;
 float Z_Off   =-20.0f;
 
-// Building Dimensions
-float B_width = 5.0;
-float B_height = 20.0;
-float B_base = 0.0;
+// Create Building
+Building one('r', 7.5, 7.5, 0.0, 5.0, 20.0, 3);
+Building two('r', -2.0, -2.0, 0.0, 5.0, 20.0, 3);
 
 //////////////////////////////////////////////////////////
 // String rendering routine; leverages on GLUT routine. //
@@ -80,7 +84,10 @@ void CallBackRenderScene(void)
    glVertex3f(15.0f,0.0f,15.0f);
    glVertex3f(-15.0f,0.0f,15.0f);
 
+   one.Draw();
+   two.Draw();
 
+   /*
    //bottom face
    glNormal3f( 0.0f, 0.0f,B_base);
    glColor4f(0.2,0.9,0.2,.5);
@@ -134,7 +141,7 @@ void CallBackRenderScene(void)
    glVertex3f(-(B_width/2), B_base+B_height,  B_width/2);
    glVertex3f(-(B_width/2),  B_base,  B_width/2);
    glVertex3f(-(B_width/2),  B_base, -(B_width/2));
-
+   */
    // All polygons have been drawn.
    glEnd();
 
@@ -222,7 +229,7 @@ void CallBackSpecialKeyPressed(int key, int x, int y)
       Y_Speed -= 0.01f;
       break;
    case GLUT_KEY_RIGHT: // increase y rotation speed;
-        B_base = B_base-B_height-0.01;
+      Y_Speed += 0.01f;
       break;
    default:
       printf ("SKP: No action for %d.\n", key);
