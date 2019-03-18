@@ -77,15 +77,15 @@ void CallBackRenderScene(void)
 
    //block
    glNormal3f( 0.0f, 0.0f,0.0f);
-   glColor4f(0.5,0.9,0.2,.5);
+   glColor3f(0.5,0.0,0.2);
 
    glVertex3f(-15.0f,0.0f,-15.0f);
    glVertex3f(15.0f,0.0f,-15.0f);
    glVertex3f(15.0f,0.0f,15.0f);
    glVertex3f(-15.0f,0.0f,15.0f);
 
-   one.Draw();
-   two.Draw();
+   one.Draw(); //Draw building 1
+   two.Draw(); //Draw building 2
 
    /*
    //bottom face
@@ -229,7 +229,8 @@ void CallBackSpecialKeyPressed(int key, int x, int y)
       Y_Speed -= 0.01f;
       break;
    case GLUT_KEY_RIGHT: // increase y rotation speed;
-      Y_Speed += 0.01f;
+      //Y_Speed += 0.01f;
+      one.Destroy();
       break;
    default:
       printf ("SKP: No action for %d.\n", key);
