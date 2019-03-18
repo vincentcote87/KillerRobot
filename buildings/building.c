@@ -1,3 +1,7 @@
+//Author: Darsh Thanki (001182949)
+//Date: March 18, 2019
+//This file is a function definition file for the Building class.
+
 #include <stdlib.h>
 #include "building.h"
 
@@ -12,6 +16,12 @@
 #include <GL/glut.h>
 #endif
 
+/*
+Building(): Default constructor that sets basic variables that haven't been defined by the user.
+param[\in]: none
+parem[\out]: none
+*/
+
 Building::Building()
 {
   width = 5.0;
@@ -20,6 +30,17 @@ Building::Building()
   hitCount = 1;
 }
 
+/*
+Building(): Parameterized constructor that sets class variables with values provided by the user.
+param[\in]: char  bShape    : Shape of building. Could be rectangle, cylinder or pyramid.
+            float bCenterX  : X-Coord Center position of the building relative to the position of the block.
+            float bCenterZ  : Z-Coord Center position of the building relative to the position of the block.
+            float bBase     : Base of the building. Should be 0 by default.
+            float bWidth    : Width of the building.
+            float bHeight   : Height of the building.
+            int   bHit      : Number of times a user must click the building to destroy it.
+parem[\out]: none
+*/
 Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, float bWidth, float bHeight, int bHit)
 {
   shape = bShape;
@@ -97,5 +118,10 @@ void Building::Draw()
 
 void Building::Destroy()
 {
-  base -= height; //Simply redraw the building in the opposite direction. Essentially hiding the building.
+  if(hitCount == 0){
+    base -= 100+height;
+    hitCount--; //Simply redraw the building in the opposite direction. Essentially hiding the building.
+  }else{
+    hitCount--;
+  }
 }
