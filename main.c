@@ -1,8 +1,15 @@
 #include <stdlib.h>
 
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/gl.h>
-#include <GL/glut.h>
 #include <GL/glu.h>
+#include <GL/glut.h>
+#endif
 
 int window_width = 800;
 int window_height = 600;
@@ -35,19 +42,19 @@ void mouse(int button, int state, int x, int y) {
 }
 
 int main(int argc, char** argv) {
-  
+
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize (window_width, window_height); 
+  glutInitWindowSize (window_width, window_height);
   glutInitWindowPosition (window_position_x, window_position_y);
   glutCreateWindow ("Killer Robot");
   init ();
-  glutDisplayFunc(display); 
-  glutReshapeFunc(reshape); 
+  glutDisplayFunc(display);
+  glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeyboard);
   glutMouseFunc(mouse);
   glutMainLoop();
-  
+
   return 0;
 }
