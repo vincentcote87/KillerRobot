@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "./robot/robot.c"
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -16,12 +17,48 @@ int window_height = 600;
 int window_position_x = 100;
 int window_position_y = 100;
 
+int Y_Rot = 0;
+
+Robot *r = new Robot();
+
 void display(void) {
-  // Add display functions here
+   // Add display functions here
+   gluLookAt(10,0,10,0,0,0,0,1,0);
+
+   //Initialization
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   //Drawing robot here
+   r->Draw();
+   
+
+   //Stuff here so that it will actually show the stuff which has been drawn
+   glLoadIdentity();
+   glMatrixMode(GL_PROJECTION);
+
+   glutSwapBuffers();
 }
 
 void reshape(int w, int h) {
-  // Add reshape functions here
+   // Add reshape functions here
+
+   // Let's not core dump, no matter what.
+   if (h == 0)
+      h = 1;
+
+   glViewport(0, 0, w, h);
+
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   gluPerspective(45.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
+
+   glMatrixMode(GL_MODELVIEW);
+
+   window_width  = w;
+   window_height = h;
+   
 }
 
 void init(void) {
