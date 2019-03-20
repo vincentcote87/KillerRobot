@@ -19,7 +19,7 @@
 /*
 Building(): Default constructor that sets basic variables that haven't been defined by the user.
 param[\in]: none
-parem[\out]: none
+param[\out]: none
 */
 
 Building::Building()
@@ -39,7 +39,7 @@ param[\in]: char  bShape    : Shape of building. Could be rectangle, cylinder or
             float bWidth    : Width of the building.
             float bHeight   : Height of the building.
             int   bHit      : Number of times a user must click the building to destroy it.
-parem[\out]: none
+param[\out]: none
 */
 Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, float bWidth, float bHeight, int bHit)
 {
@@ -52,10 +52,18 @@ Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, flo
   hitCount = bHit;
 }
 
+/*
+Draw(): Draw the building. Uses if-elseif-else statement to define the construction of the building.
+        The function has a predefined "template" to construct the buildings.
+        This includes rectangles, cylinders, and pyramids.
+param[\in]: none
+param[\out]: none
+*/
 void Building::Draw()
 {
   if (shape == 'r')
   {
+    glBegin(GL_QUADS);
     //bottom face
     glNormal3f( 0.0f, 0.0f,base);
     glColor4f(0.2,0.9,0.2,.5);
@@ -88,8 +96,8 @@ void Building::Draw()
     glColor4f(0.2,0.9,0.2,.5);
 
     glVertex3f(centerX-(width/2), base, centerZ+(width/2));
-    glVertex3f( width/2, base, centerZ+(width/2));
-    glVertex3f( width/2, base+height, centerZ+(width/2));
+    glVertex3f( centerX+(width/2), base, centerZ+(width/2));
+    glVertex3f( centerX+(width/2), base+height, centerZ+(width/2));
     glVertex3f(centerX-(width/2), base+height, centerZ+(width/2));
 
     //far face
@@ -98,8 +106,8 @@ void Building::Draw()
 
     glVertex3f(centerX-(width/2), base, centerZ-(width/2));
     glVertex3f(centerX-(width/2), base+height, centerZ-(width/2));
-    glVertex3f( width/2, base+height, centerZ-(width/2));
-    glVertex3f( width/2, base, centerZ-(width/2));
+    glVertex3f( centerX+(width/2), base+height, centerZ-(width/2));
+    glVertex3f( centerX+(width/2), base, centerZ-(width/2));
 
     //left face
     glNormal3f(centerX-(width/2), 0.0f, 0.0f);
@@ -109,13 +117,42 @@ void Building::Draw()
     glVertex3f(centerX-(width/2), base+height, centerZ+(width/2));
     glVertex3f(centerX-(width/2), base, centerZ+(width/2));
     glVertex3f(centerX-(width/2), base, centerZ-(width/2));
-  }else if(shape == 'c'){
+    glEnd();
+  }else if(shape == 'p'){
   //Add cylinder construction code here
+    glBegin( GL_TRIANGLES );
+    glColor4f(0.2,0.9,0.2,.5);
+    glVertex3f( centerX, height, centerZ );
+    glVertex3f( centerX-(width/2), base, centerZ+(width/2) );
+    glVertex3f( centerX+(width/2), base, centerZ+(width/2));
+
+    glColor4f(0.2,0.9,0.2,.5);
+    glVertex3f( centerX, height, centerZ);
+    glVertex3f( centerX-(width/2), base, centerZ+(width/2));
+    glVertex3f( centerX-(width/2), base, centerZ-(width/2));
+
+    glColor4f(0.2,0.9,0.2,.5);
+    glVertex3f( centerX, height, centerZ);
+    glVertex3f( centerX-(width/2), base, centerZ-(width/2));
+    glVertex3f( centerX+(width/2), base, centerZ+(width/2));
+
+    glColor4f(0.2,0.9,0.2,.5);
+    glVertex3f( centerX-(width/2), base, centerZ+(width/2));
+    glVertex3f( centerX-(width/2), base, centerZ-(width/2));
+    glVertex3f( centerX+(width/2), base, centerZ+(width/2));
+
+    glEnd();
   }else{
-  //Add pyramid construction code here.
+    // Enter cylinder code here.
   }
 }
 
+/*
+Destroy(): Destroy the building if click count has been met. This function pushes
+           the building underneath the base to hide it.
+param[\in]: none
+param[\out]: none
+*/
 void Building::Destroy()
 {
   if(hitCount == 0){
