@@ -36,7 +36,7 @@ float Z_Off   =-20.0f;
 
 // Create Building
 Building one('r', 7.5, 7.5, 0.0, 5.0, 20.0, 3);
-Building two('r', -2.0, -2.0, 0.0, 5.0, 20.0, 3);
+Building two('p', -2.0, -2.0, 0.0, 5.0, 20.0, 3);
 
 //////////////////////////////////////////////////////////
 // String rendering routine; leverages on GLUT routine. //
@@ -83,6 +83,8 @@ void CallBackRenderScene(void)
    glVertex3f(15.0f,0.0f,-15.0f);
    glVertex3f(15.0f,0.0f,15.0f);
    glVertex3f(-15.0f,0.0f,15.0f);
+
+   glEnd();
 
    one.Draw(); //Draw building 1
    two.Draw(); //Draw building 2
