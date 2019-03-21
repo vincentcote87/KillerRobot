@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include "./robot/robot.c"
+#include <iostream>
+#include "./robot/robot.h"
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -19,16 +20,26 @@ int window_position_y = 100;
 
 int Y_Rot = 0;
 
+float eye_x = 0.0;
+float eye_y = 5.0;
+float eye_z = -15.0;
+float at_x = 0.0;
+float at_y = 3.0;
+float at_z = 0.0;
+
 Robot *r = new Robot();
 
 void display(void) {
    // Add display functions here
-   gluLookAt(10,0,10,0,0,0,0,1,0);
-
+  
    //Initialization
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   gluLookAt(0.0,5.0,-15.0,
+             0.0,3.0,0.0,
+             0.0,1.0,0.0);
 
    //Drawing robot here
    r->Draw();
@@ -52,7 +63,8 @@ void reshape(int w, int h) {
 
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
-   gluPerspective(45.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
+
+   gluPerspective(60.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
 
    glMatrixMode(GL_MODELVIEW);
 
@@ -64,6 +76,7 @@ void reshape(int w, int h) {
 void init(void) {
   // Add init functions here
   glClearColor (0.0, 0.0, 0.0, 0.0);
+  glEnable(GL_DEPTH_TEST);
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -123,12 +136,13 @@ void mouse(int button, int state, int x, int y) {
 int main(int argc, char** argv) {
 
   glutInit(&argc, argv);
-  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize (window_width, window_height);
   glutInitWindowPosition (window_position_x, window_position_y);
   glutCreateWindow ("Killer Robot");
   init ();
-  glutDisplayFunc(display);
+  // glutDisplayFunc(&display);
+  glutIdleFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeyboard);

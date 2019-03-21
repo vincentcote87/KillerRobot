@@ -3,6 +3,7 @@
 //This file is a function definition file for the Robot class.
 
 #include <stdlib.h>
+#include <iostream>
 #include "robot.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -99,7 +100,6 @@ void Robot::Draw()
    ////////////////////////////////////////////////////
    //Drawing head of the robot
    ////////////////////////////////////////////////////
-   
    glPushMatrix();
    glBegin(GL_QUADS); 
 
@@ -248,8 +248,8 @@ void Robot::Draw()
 
    if(Y_Speed % 5 == 0){
       Y_Rot+=30;
-      cout 
    }
+
 }
 
 
@@ -289,6 +289,3 @@ void Robot::Turn(int turnDirection){
 	 break;
    }
 }
-
-
-   
