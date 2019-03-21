@@ -37,8 +37,8 @@ void display(void) {
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   gluLookAt(0.0,5.0,-15.0,
-             0.0,3.0,0.0,
+   gluLookAt(eye_x,eye_y,eye_z,
+             at_x,at_y,at_z,
              0.0,1.0,0.0);
 
    //Drawing robot here
@@ -83,14 +83,17 @@ void keyboard(unsigned char key, int x, int y) {
   // Add regular keyboard functions here
   switch (key) {
     case 97: // a
+      r->Turn(3);
       break;
     case 112: // p
       break;
     case 113: // q
+      r->Turn(1);
       break;
     case 114: // r
       break;
     case 122: //z
+      r->MoveForward();
       break;
     default:
       break;
