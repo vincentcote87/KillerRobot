@@ -24,6 +24,7 @@ Robot::Robot()
    centerZ = 0.0;
    Y_Speed = 0.0;
    Y_Rot = 0.0;
+   direction = 0;
 }
 
 //Draw function, draws the robot to the screen
@@ -32,6 +33,10 @@ void Robot::Draw()
 {
    Y_Speed += 1;
 
+   ////////////////////////////////////////////
+   // Drawing the body of the robot
+   ///////////////////////////////////////////
+   
    glPushMatrix();
    glBegin(GL_QUADS); 
 
@@ -93,8 +98,8 @@ void Robot::Draw()
    glPopMatrix();
 
    ////////////////////////////////////////////////////
-   //Drawing head
-      
+   //Drawing head of the robot
+   ////////////////////////////////////////////////////
    glPushMatrix();
    glBegin(GL_QUADS); 
 
@@ -156,8 +161,8 @@ void Robot::Draw()
    glPopMatrix();
 
    ///////////////////////////////////////////////////
-
    //Drawing Neck
+   ///////////////////////////////////////////////////
 
    glPushMatrix();
 
@@ -170,8 +175,8 @@ void Robot::Draw()
    glPopMatrix();
    
    ////////////////////////////////////////////////////
-
    //Drawing Antenna
+   ////////////////////////////////////////////////////
 
    glPushMatrix();
 
@@ -204,8 +209,8 @@ void Robot::Draw()
    glPopMatrix();
 
    ////////////////////////////////////////////////////////////
-
    //Drawing Front Square
+   ////////////////////////////////////////////////////////////
 
    glPushMatrix();
    glBegin(GL_QUADS);
@@ -222,8 +227,8 @@ void Robot::Draw()
    glPopMatrix();
 
    ////////////////////////////////////////////////////////////
-
    //Drawing back triangles
+   ///////////////////////////////////////////////////////////
 
    glPushMatrix();
    glColor4f(1.0f, 1.0f, 1.0f, 1.0);
@@ -248,6 +253,39 @@ void Robot::Draw()
 }
 
 
+void Robot::MoveForward(){
 
+   switch(direction){
+      case(0):
+	 glTranslatef(0.0f,0.0f,-5.0f);
+	 break;
+      case(1):
+	 glTranslatef(-5.0f, 0.0f, 0.0f);
+	 break;
+      case(2):
+	 glTranslatef(0.0f, 0.0f, 5.0f);
+	 break;
+      case(3):
+	 glTranslatef(5.0f, 0.0f, 0.0f);
+   }
+}
 
-   
+void Robot::Turn(int turnDirection){
+   direction = turnDirection;
+
+   glLoadIdentity();
+   switch(direction){
+      case(0):
+	 glRotatef(0, 1.0f, 0.0f, 0.0f);
+	 break;
+      case(1):
+	 glRotatef(90, 1.0f, 0.0f, 0.0f);
+	 break;
+      case(2):
+	 glRotatef(180, 1.0f, 0.0f, 0.0f);
+	 break;
+      case(3):
+	 glRotatef(270, 1.0f, 0.0f, 0.0f);
+	 break;
+   }
+}

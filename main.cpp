@@ -31,7 +31,7 @@ Robot *r = new Robot();
 
 void display(void) {
    // Add display functions here
-
+  
    //Initialization
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
@@ -63,6 +63,7 @@ void reshape(int w, int h) {
 
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
+
    gluPerspective(60.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
 
    glMatrixMode(GL_MODELVIEW);
