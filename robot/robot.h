@@ -12,8 +12,11 @@ class Robot {
    Robot();
 
    void Draw();
-
+   void MoveForward();
+   void Turn(int);
+   
   private:
+   int direction; //0 for facing -z, 1 for facing -x, 2 for +z, 3 for +x
    int Y_Speed;
    float Y_Rot;
 
