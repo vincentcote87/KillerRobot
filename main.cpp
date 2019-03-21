@@ -27,6 +27,8 @@ float at_x = 0.0;
 float at_y = 3.0;
 float at_z = 0.0;
 
+bool isPaused = false;
+
 Robot *r = new Robot();
 
 void display(void) {
@@ -86,6 +88,14 @@ void keyboard(unsigned char key, int x, int y) {
       r->Turn(3);
       break;
     case 112: // p
+      if (isPaused) {
+        glutIdleFunc(display);
+        isPaused = false;
+      } else {
+        glutDisplayFunc(display);
+        glutIdleFunc(NULL);
+        isPaused = true;
+      }
       break;
     case 113: // q
       r->Turn(1);
@@ -110,22 +120,76 @@ void specialKeyboard(int key, int x, int y) {
     case GLUT_KEY_F3:
       break;
     case GLUT_KEY_F4:
+      eye_x = 0.0;
+      eye_y = 5.0;
+      eye_z = -15.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F5:
+      eye_x = 15.0;
+      eye_y = 10.0;
+      eye_z = -15.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F6:
+      eye_x = -15.0;
+      eye_y = 10.0;
+      eye_z = -15.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F7:
+      eye_x = -15.0;
+      eye_y = 10.0;
+      eye_z = 15.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F8:
+      eye_x = 15.0;
+      eye_y = 10.0;
+      eye_z = 15.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F9:
+      eye_x = 25.0;
+      eye_y = 15.0;
+      eye_z = -35.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F10:
+      eye_x = -25.0;
+      eye_y = 15.0;
+      eye_z = -35.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F11:
+      eye_x = -25.0;
+      eye_y = 15.0;
+      eye_z = 35.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     case GLUT_KEY_F12:
+      eye_x = 25.0;
+      eye_y = 15.0;
+      eye_z = 35.0;
+      at_x = 0.0;
+      at_y = 3.0;
+      at_z = 0.0;
       break;
     default:
       break;
