@@ -9,7 +9,7 @@ LIBRARIES = -lX11 -lXi -lXmu -lglut -lGL -lGLU -lm
 All: main
 
 main: main.o
-	$(CC) $(CFLAGS) -o $@ $(LIBDIR) $< $(LIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $(LIBDIR) ./robot/robot.cpp $< $(LIBRARIES)
 
 clean:
 	rm *.o

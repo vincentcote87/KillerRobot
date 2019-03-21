@@ -3,6 +3,7 @@
 //This file is a function definition file for the Robot class.
 
 #include <stdlib.h>
+#include <iostream>
 #include "robot.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -30,7 +31,7 @@ Robot::Robot()
 void Robot::Draw()
 {
    Y_Speed += 1;
-   
+
    glPushMatrix();
    glBegin(GL_QUADS); 
 
