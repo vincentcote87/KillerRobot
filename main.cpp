@@ -27,6 +27,11 @@ float at_x = 0.0;
 float at_y = 3.0;
 float at_z = 0.0;
 
+float pos_x = 0.0;
+float pos_z = 0.0;
+float robotAngle = 0.0;
+float moveDistance = 1.0;
+
 bool isPaused = false;
 
 Robot *r = new Robot();
@@ -43,6 +48,8 @@ void display(void) {
              at_x,at_y,at_z,
              0.0,1.0,0.0);
 
+   glTranslatef(pos_x, 0.0, pos_z);
+   glRotatef(robotAngle, 0.0, 1.0, 0.0);
    //Drawing robot here
    r->Draw();
    
@@ -66,7 +73,7 @@ void reshape(int w, int h) {
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
 
-   gluPerspective(60.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
+   gluPerspective(60.0f,(GLfloat)w/(GLfloat)h, 1.0f, 100.0f);
 
    glMatrixMode(GL_MODELVIEW);
 
@@ -83,31 +90,47 @@ void init(void) {
 
 void keyboard(unsigned char key, int x, int y) {
   // Add regular keyboard functions here
-  switch (key) {
+  if (!isPaused) {
+    switch (key) {
     case 97: // a
-      r->Turn(3);
+      // r->Turn(3);
+      robotAngle += 90;
+      if (robotAngle >= 360)
+        robotAngle = 0.0;
       break;
     case 112: // p
-      if (isPaused) {
-        glutIdleFunc(display);
-        isPaused = false;
-      } else {
-        glutDisplayFunc(display);
-        glutIdleFunc(NULL);
-        isPaused = true;
-      }
+      glutDisplayFunc(display);
+      glutIdleFunc(NULL);
+      isPaused = true;
       break;
     case 113: // q
-      r->Turn(1);
+      robotAngle -= 90.0;
+      if (robotAngle <= 0.0)
+        robotAngle = 360.0;
       break;
     case 114: // r
       break;
     case 122: //z
-      r->MoveForward();
+      // r->MoveForward();
+      if (robotAngle == 270.0) {
+        pos_x -= moveDistance;
+      } else if (robotAngle == 90.0) {
+        pos_x += moveDistance;
+      } else if (robotAngle == 0.0) {
+        pos_z += moveDistance;
+      } else if (robotAngle == 180.0) {
+        pos_z -= moveDistance;
+      }
+      // pos_z += 1.0;
       break;
     default:
       break;
+    }
+  } else if (key == 112) {
+      glutIdleFunc(display);
+      isPaused = false;
   }
+
 }
 
 void specialKeyboard(int key, int x, int y) {
@@ -208,7 +231,6 @@ int main(int argc, char** argv) {
   glutInitWindowPosition (window_position_x, window_position_y);
   glutCreateWindow ("Killer Robot");
   init ();
-  // glutDisplayFunc(&display);
   glutIdleFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);

@@ -255,6 +255,7 @@ void Robot::Draw()
 
 void Robot::MoveForward(){
 
+   // glPopMatrix();
    switch(direction){
       case(0):
 	 glTranslatef(0.0f,0.0f,-5.0f);
@@ -272,6 +273,7 @@ void Robot::MoveForward(){
 	 glTranslatef(5.0f, 0.0f, 0.0f);
     centerX += 5;
    }
+   glPushMatrix();
 }
 
 void Robot::Turn(int turnDirection){
