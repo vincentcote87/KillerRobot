@@ -83,12 +83,10 @@ void keyboard(unsigned char key, int x, int y) {
   // Add regular keyboard functions here
   switch (key) {
     case 97: // a
-      r->Turn(3);
       break;
-    case 112: // p
+     case 112: // p
       break;
-    case 113: // q
-      r->Turn(1);
+     case 113: // q
       break;
     case 114: // r
       break;
@@ -105,11 +103,47 @@ void specialKeyboard(int key, int x, int y) {
   switch (key) {
     case GLUT_KEY_F1:
       break;
-    case GLUT_KEY_F2:
+     case GLUT_KEY_F2:
+	r->TurnHead("Right");
+	break;
+     case GLUT_KEY_F3:
+	r->TurnHead("Left");
       break;
-    case GLUT_KEY_F3:
+     case GLUT_KEY_F4:
       break;
-    case GLUT_KEY_F4:
+    case GLUT_KEY_F5:
+      break;
+    case GLUT_KEY_F6:
+      break;
+    case GLUT_KEY_F7:
+      break;
+    case GLUT_KEY_F8:
+      break;
+    case GLUT_KEY_F9:
+      break;
+    case GLUT_KEY_F10:
+      break;
+    case GLUT_KEY_F11:
+      break;
+    case GLUT_KEY_F12:
+      break;
+    default:
+      break;
+  }
+}
+
+void keySpecialUp(int key, int x, int y) {
+  // Add special keyboard functions here
+  switch (key) {
+    case GLUT_KEY_F1:
+      break;
+     case GLUT_KEY_F2:
+	r->TurnHead("");
+	break;
+     case GLUT_KEY_F3:
+	r->TurnHead("");
+      break;
+     case GLUT_KEY_F4:
       break;
     case GLUT_KEY_F5:
       break;
@@ -149,6 +183,7 @@ int main(int argc, char** argv) {
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeyboard);
+  glutSpecialUpFunc(keySpecialUp);
   glutMouseFunc(mouse);
   glutMainLoop();
 
