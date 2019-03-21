@@ -20,7 +20,7 @@
 Building(): Default constructor that sets basic variables that haven't been defined by the user.
 param[\in]: none
 param[\out]: none
-*/
+
 
 Building::Building()
 {
@@ -29,7 +29,7 @@ Building::Building()
   base = 0.0;
   hitCount = 1;
 }
-
+*/
 /*
 Building(): Parameterized constructor that sets class variables with values provided by the user.
 param[\in]: char  bShape    : Shape of building. Could be rectangle, cylinder or pyramid.
@@ -41,7 +41,7 @@ param[\in]: char  bShape    : Shape of building. Could be rectangle, cylinder or
             int   bHit      : Number of times a user must click the building to destroy it.
 param[\out]: none
 */
-Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, float bWidth, float bHeight, int bHit)
+Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, float bWidth, float bHeight, int bHit, int bID)
 {
   shape = bShape;
   width = bWidth;
@@ -50,6 +50,7 @@ Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, flo
   centerX = bCenterX;
   centerZ = bCenterZ;
   hitCount = bHit;
+  buildingID = bID;
 }
 
 /*
@@ -65,8 +66,8 @@ void Building::Draw()
   {
     glBegin(GL_QUADS);
     //bottom face
-    glNormal3f( 0.0f, 0.0f,base);
-    glColor4f(0.2,0.9,0.2,.5);
+    glNormal3f( 0.0f, base, 0.0f);
+    glColor3f(0.64f, 0.64f, 0.64f);
 
     glVertex3f(centerX-(width/2),base, centerZ-(width/2));
     glVertex3f(centerX+(width/2),base, centerZ-(width/2));
@@ -75,7 +76,7 @@ void Building::Draw()
 
     //top face
     glNormal3f( 0.0f, 0.0f,base+height);
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.64f, 0.64f, 0.64f);
 
     glVertex3f( centerX-(width/2), base+height, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base+height, centerZ-(width/2));
@@ -84,7 +85,7 @@ void Building::Draw()
 
     //Right face
     glNormal3f(centerX+(width/2), 0.0f, 0.0f);
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.64f, 0.64f, 0.64f);
 
     glVertex3f( centerX+(width/2), base, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base+height, centerZ-(width/2));
@@ -93,7 +94,7 @@ void Building::Draw()
 
     //front face
     glNormal3f( 0.0f, 0.0f, 1.0f);
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.64f, 0.64f, 0.64f);
 
     glVertex3f(centerX-(width/2), base, centerZ+(width/2));
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
@@ -102,7 +103,7 @@ void Building::Draw()
 
     //far face
     glNormal3f( 0.0f, 0.0f,centerZ-(width/2));
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.64f, 0.64f, 0.64f);
 
     glVertex3f(centerX-(width/2), base, centerZ-(width/2));
     glVertex3f(centerX-(width/2), base+height, centerZ-(width/2));
@@ -111,7 +112,7 @@ void Building::Draw()
 
     //left face
     glNormal3f(centerX-(width/2), 0.0f, 0.0f);
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.64f, 0.64f, 0.64f);
 
     glVertex3f(centerX-(width/2), base+height, centerZ-(width/2));
     glVertex3f(centerX-(width/2), base+height, centerZ+(width/2));
@@ -119,31 +120,30 @@ void Building::Draw()
     glVertex3f(centerX-(width/2), base, centerZ-(width/2));
     glEnd();
   }else if(shape == 'p'){
-  //Add cylinder construction code here
+    //Pyramid
     glBegin( GL_TRIANGLES );
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.94f, 0.94f, 0.94f);
     glVertex3f( centerX, height, centerZ );
     glVertex3f( centerX-(width/2), base, centerZ+(width/2) );
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
 
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.94f, 0.94f, 0.94f);
     glVertex3f( centerX, height, centerZ);
     glVertex3f( centerX-(width/2), base, centerZ+(width/2));
     glVertex3f( centerX-(width/2), base, centerZ-(width/2));
 
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.94f, 0.94f, 0.94f);
     glVertex3f( centerX, height, centerZ);
     glVertex3f( centerX-(width/2), base, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
 
-    glColor4f(0.2,0.9,0.2,.5);
+    glColor3f(0.94f, 0.94f, 0.94f);
     glVertex3f( centerX-(width/2), base, centerZ+(width/2));
     glVertex3f( centerX-(width/2), base, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
 
     glEnd();
-  }else{
-    // Enter cylinder code here.
+
   }
 }
 

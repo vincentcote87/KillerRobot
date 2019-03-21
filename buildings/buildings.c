@@ -7,8 +7,10 @@
 
 #include <stdlib.h>  // Useful for the following includes.
 #include <stdio.h>
+#include <cmath>
 #include <string.h>  // For spring operations.
 #include "building.h" //Include the building class
+#include "../block/block.h"
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -32,11 +34,10 @@ float X_Rot   = 0.9f;  // Initially only rotate around X-axix.
 float Y_Rot   = 0.0f;  // Later on you can use control keys to change
 float X_Speed = 0.0f;  // the rotation.
 float Y_Speed = 0.05f;
-float Z_Off   =-20.0f;
+float Z_Off   =-50.0f;
 
 // Create Building
-Building one('r', 7.5, 7.5, 0.0, 5.0, 20.0, 3);
-Building two('p', -2.0, -2.0, 0.0, 5.0, 20.0, 3);
+Block a(1.0, 1.0, 5);
 
 //////////////////////////////////////////////////////////
 // String rendering routine; leverages on GLUT routine. //
@@ -86,8 +87,7 @@ void CallBackRenderScene(void)
 
    glEnd();
 
-   one.Draw(); //Draw building 1
-   two.Draw(); //Draw building 2
+   a.Draw();
 
    /*
    //bottom face
@@ -159,7 +159,7 @@ void CallBackRenderScene(void)
    // Display a string
    // Now we set up a new projection for the text.
    glLoadIdentity();
-   glOrtho(0,Window_Width,0,Window_Height,-10.0,10.0);
+   glOrtho(0,Window_Width,0,Window_Height,-30.0,30.0);
    glColor4f(0.6,1.0,0.6,1.00);
    sprintf(buf,"%s", DISPLAY_INFO); // Print the string into a buffer
    glRasterPos2i(2,2);                         // Set the coordinate
@@ -231,8 +231,7 @@ void CallBackSpecialKeyPressed(int key, int x, int y)
       Y_Speed -= 0.01f;
       break;
    case GLUT_KEY_RIGHT: // increase y rotation speed;
-      //Y_Speed += 0.01f;
-      one.Destroy();
+      Y_Speed += 0.01f;
       break;
    default:
       printf ("SKP: No action for %d.\n", key);
@@ -291,6 +290,7 @@ void MyInit(int Width, int Height)
 ///////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+   srand(time(0));
    glutInit(&argc, argv);
 
    // To see OpenGL drawing, take out the GLUT_DOUBLE request.

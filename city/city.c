@@ -8,6 +8,12 @@
 #include <stdlib.h>  // Useful for the following includes.
 #include <stdio.h>
 #include <string.h>  // For spring operations.
+#include <vector>
+#include "../buildings/building.h"
+#include "../block/block.h"
+#include <cmath>
+#include <ctime>
+#include <stdint.h>
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -34,19 +40,26 @@ float Y_Speed = 0.05f;
 float Z_Off   =-20.0f;
 
 //define city specifications
-float blockDim = 10.0; //define block dimensions (square)
+int blockDim = 5; //define block dimensions (square)
 float streetWidth = 4.0; //define street width
 int numBlocks = 20;
-int rowBlocks = 5;
-int colBlocks = 5;
+int rowBlocks = 20;
+int colBlocks = 20;
+int RenderMode = GL_RENDER;
 
 //Calculate city size
 //City width and length's are the sum of the dimensions of the blocks and streets
 float cityW = (rowBlocks*blockDim) + (streetWidth*(rowBlocks-1));
 float cityH = (colBlocks*blockDim) + (streetWidth*(rowBlocks-1));
 
-float startPosX = -(cityW/2);
-float startPosZ = -(cityW/2);
+int cityMin_x = 0 - (cityW/2);
+int cityMax_x = cityW/2;
+int cityMin_z = 0 - (cityH/2);
+int cityMax_z = cityH/2;
+
+std::vector<Building*> buildings;
+
+Block a(50.0, 50.0, 1);
 
 //////////////////////////////////////////////////////////
 // String rendering routine; leverages on GLUT routine. //
@@ -58,6 +71,69 @@ static void PrintString(void *font, char *str)
    for(i=0;i < len; i++)
       glutBitmapCharacter(font,*str++);
 }
+
+void drawGround()
+{
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glColor4f( 0.1f, 0.1f, 0.1f, 1.0f);
+    glVertex3f( cityMin_x, 0.0f, cityMin_z );
+    glVertex3f( cityMin_x, 0.0f, cityMax_z+1 );
+    glVertex3f( cityMax_x+1, 0.0f, cityMax_z+1 );
+    glVertex3f( cityMax_x+1, 0.0f, cityMin_z );
+    glEnd();
+    glPopMatrix();
+
+}
+
+////////////////////////////////////////////////////////
+//   Draw Grass.    //
+////////////////////////////////////////////////////////
+
+void drawGrass()
+{
+    glPushMatrix();
+    for (GLint i = cityMin_x; i < cityMax_x; i++)
+    {
+        for (GLint j = cityMin_z; j < cityMin_z; j++)
+        {
+            if(i%blockDim != 0 && j%blockDim !=0)
+                glBegin(GL_QUADS);
+                glNormal3f(0.0f, 1.0f, 0.0f);
+                glColor4f( 0.0f, 0.5f, 0.0f, 1.0f);
+                glVertex3f( i+0.9+0.5, 0.01f, j+0.1-0.5);
+                glVertex3f( i+0.1-0.5, 0.01f, j+0.1-0.5);
+                glVertex3f( i+0.1-0.5, 0.01f, j+0.9+0.5);
+                glVertex3f( i+0.9+0.5, 0.01f, j+0.9+0.5);
+                glEnd();
+        }
+    }
+    glPopMatrix();
+}
+
+void drawCity()
+{
+    if (RenderMode == GL_SELECT)
+    {
+        glInitNames();
+        glPushName(-1);
+    }
+    for (GLuint i = 0; i < buildings.size(); i++)
+    {
+            if (RenderMode == GL_SELECT)
+            {
+                glLoadName(buildings[i]->buildingID);
+            }
+            buildings[i]->Draw();
+    }
+    if (RenderMode == GL_RENDER)
+    {
+        drawGround();
+        drawGrass();
+    }
+}
+
 
 /////////////////////////////////////////////////////////
 // Routine which actually does the drawing             //
@@ -83,10 +159,10 @@ void CallBackRenderScene(void)
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // OK, let's start drawing our planer quads.
-   glBegin(GL_QUADS);
+   //glBegin(GL_QUADS);
 
    //city base
-
+/*
    glNormal3f( 0.0f, 0.0f,0.0f);
    glColor4f(0.0,0.0,0.0,1);
 
@@ -94,14 +170,16 @@ void CallBackRenderScene(void)
    glVertex3f(cityW/2,0.0f,-(cityW/2));
    glVertex3f(cityW/2,0.0f,cityW/2);
    glVertex3f(-(cityW/2),0.0f,cityW/2);
-
-
+*/
+    a.Draw();
+   //drawCity();
+   /*
    for(int i = 0; i < rowBlocks; i++){
-     /*
+
      for(int j = 0; j < colBlocks; j++){
 
      }
-     */
+
 
      glNormal3f( 0.0f, 0.0f,0.01f);
      glColor4f(0.2,0.9,0.2,.5);
@@ -114,12 +192,16 @@ void CallBackRenderScene(void)
      startPosX = startPosX + streetWidth;
 
    }
+   */
 
    // All polygons have been drawn.
-   glEnd();
+   //glEnd();
+
+
 
    // Move back to the origin
    glLoadIdentity();
+
 
    // We need to change the projection matrix for the text rendering.
    glMatrixMode(GL_PROJECTION);
@@ -130,7 +212,7 @@ void CallBackRenderScene(void)
    // Display a string
    // Now we set up a new projection for the text.
    glLoadIdentity();
-   glOrtho(0,Window_Width,0,Window_Height,-10.0,10.0);
+   glOrtho(0,Window_Width,0,Window_Height,-100.0,100.0);
    glColor4f(0.6,1.0,0.6,1.00);
    sprintf(buf,"%s", DISPLAY_INFO); // Print the string into a buffer
    glRasterPos2i(2,2);                         // Set the coordinate
@@ -147,6 +229,7 @@ void CallBackRenderScene(void)
 
    // We start with GL_DECAL mode.
    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+
 
    // All done drawing.  Let's show it.
    glutSwapBuffers();
@@ -230,6 +313,29 @@ void CallBackResizeScene(int Width, int Height)
    Window_Width  = Width;
    Window_Height = Height;
 }
+/*
+void initializeBuildings()
+{
+  int buildingID = 0;
+  for (int i = cityMin_x; i < cityMax_x; i++)
+  {
+    for(int j = cityMin_z; i < cityMax_z; j++)
+    {
+      if(i%blockDim != 0 && j%blockDim != 0)
+      {
+        //The probability of a building being created is 70%
+        double probBuilding = ((double) rand() / (RAND_MAX));
+        if(probBuilding > 0.30)
+        {
+          float randHeight = 0.50 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(5-0.50)));
+          buildings.push_back(new Building('r',i+5.0f, j+5.0f, 0.0f, 5.0f, randHeight, 3, buildingID));
+          buildingID += 1;
+        }
+      }
+    }
+  }
+}
+*/
 
 ////////////////////////////////////////////////////////
 //   Setup your program before passing the control    //
@@ -247,8 +353,10 @@ void MyInit(int Width, int Height)
    // Enables Smooth Color Shading; try GL_FLAT for (lack of) fun.
    glShadeModel(GL_SMOOTH);
 
+   RenderMode = GL_RENDER;
    // Load up the correct perspective matrix; using a callback directly.
    CallBackResizeScene(Width,Height);
+   //initializeBuildings();
 }
 
 ///////////////////////////////////////////////////
@@ -261,6 +369,7 @@ void MyInit(int Width, int Height)
 ///////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+   srand(time(0));
    glutInit(&argc, argv);
 
    // To see OpenGL drawing, take out the GLUT_DOUBLE request.
