@@ -43,6 +43,8 @@ void Block::Draw()
   glVertex3f(centerX+(width/2),0.0f, centerZ+(width/2));
   glVertex3f(centerX-(width/2),0.0f, centerZ+(width/2));
 
+  glEnd();
+
   switch (blockID) {
     case 1:
       buildings.push_back(new Building('r',centerX-5.0f, centerZ+5.0f, 0.0f, 5.0f, 20, 3, buildingID));
@@ -99,5 +101,4 @@ void Block::Draw()
     {
             buildings[i]->Draw();
     }
-    glEnd();
 }
