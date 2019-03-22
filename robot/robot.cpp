@@ -24,7 +24,8 @@ Robot::Robot()
    centerZ = 0.0;
    Y_Speed = 0.0;
    Y_Rot = 0.0;
-   direction = 0;
+   headRot = 0.0;
+   rotateHead = false;
 }
 
 //Draw function, draws the robot to the screen
@@ -101,9 +102,13 @@ void Robot::Draw()
    //Drawing head of the robot
    ////////////////////////////////////////////////////
    glPushMatrix();
+
+   glRotatef(headRot, 0.0f, 1.0f, 0.0f);
+   
+   glPushMatrix();
    glBegin(GL_QUADS); 
 
-   // Far face
+   //Front face
    glNormal3f( 0.0f, 0.0f,-1.0f);
    glColor4f(0.42f,0.42f,0.42f,1.0); 
 
@@ -121,7 +126,7 @@ void Robot::Draw()
    glTexCoord2f(0.005f, 0.995f); glVertex3f( 1.0f,  5.5f,  1.0f);
    glTexCoord2f(0.005f, 0.005f); glVertex3f( 1.0f, 3.5f,  1.0f);
 
-   // Front face
+   //Far face
    glNormal3f( 0.0f, 0.0f, 1.0f);
    glColor4f( 0.42f, 0.42f, 0.42f, 1.0);
    
@@ -206,6 +211,9 @@ void Robot::Draw()
    glTranslatef(-0.5f, 4.7f, 1.0f);
    glutSolidSphere(0.4f, 50, 50);
 
+   glPopMatrix();
+
+   //Head done
    glPopMatrix();
 
    ////////////////////////////////////////////////////////////
@@ -294,4 +302,17 @@ void Robot::Turn(int turnDirection){
 	 glRotatef(270, 0.0f, 1.0f, 0.0f);
 	 break;
    }
+}
+
+void Robot::TurnHead(std::string direction){
+   rotateHead = true;
+
+   if(direction == "Left"){
+      headRot = 90;
+   }else if(direction == "Right"){
+      headRot = -90;
+   }
+   else
+      headRot = 0;
+
 }
