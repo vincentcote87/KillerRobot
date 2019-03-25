@@ -5,6 +5,9 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include<stdlib.h>
+#include<string>
+
 class Robot {
    float centerX, centerZ;
 
@@ -14,11 +17,14 @@ class Robot {
    void Draw();
    void MoveForward();
    void Turn(int);
+   void TurnHead(std::string);
    
   private:
    int direction; //0 for facing -z, 1 for facing -x, 2 for +z, 3 for +x
    int Y_Speed;
    float Y_Rot;
+   float headRot;
+   bool rotateHead;
 
 };
 
