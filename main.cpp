@@ -137,10 +137,13 @@ void specialKeyboard(int key, int x, int y) {
   // Add special keyboard functions here
   switch (key) {
     case GLUT_KEY_F1:
+      r->TurnHead("Frw");
       break;
     case GLUT_KEY_F2:
+      r->TurnHead("Right");
       break;
     case GLUT_KEY_F3:
+      r->TurnHead("Left");
       break;
     case GLUT_KEY_F4:
       eye_x = 0.0;
