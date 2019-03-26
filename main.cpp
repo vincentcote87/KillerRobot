@@ -222,6 +222,20 @@ void specialKeyboard(int key, int x, int y) {
   }
 }
 
+void keySpecialUp(int key, int x, int y) {
+  // Add special keyboard functions here
+  switch (key) {
+    case GLUT_KEY_F1:
+      break;
+     case GLUT_KEY_F2:
+	r->TurnHead("");
+	break;
+     case GLUT_KEY_F3:
+	r->TurnHead("");
+	break;
+  }
+}
+
 void mouse(int button, int state, int x, int y) {
   // Add mouse functions here
 }
@@ -238,6 +252,7 @@ int main(int argc, char** argv) {
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeyboard);
+  glutSpecialUpFunc(keySpecialUp);
   glutMouseFunc(mouse);
   glutMainLoop();
 
