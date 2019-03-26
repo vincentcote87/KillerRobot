@@ -140,6 +140,29 @@ void drawCity()
 
 }
 
+void initializeBuildings()
+{
+    int buildingID = 0;
+    for (int i = cityMin_x; i < cityMax_x; i++)
+    {
+        for (int j = cityMin_z; j < cityMax_z; j++)
+        {
+            if(i%blockDim != 0 && j%blockDim !=0)
+            {
+                // chance of a building being created is 74%
+                double chanceOfBuilding = ((double) rand() / (RAND_MAX));
+                if (chanceOfBuilding > 0.50)
+                {
+                    float randomHeight = 0.50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(5-0.50)));
+                    buildings.push_back(new Building('r',i+streetWidth, j+streetWidth, 0.0f, (blockDim/4)-1.0, randomHeight, 3, buildingID));
+                    buildingID +=1;
+                }
+            }
+
+        }
+      }
+}
+
 void display(void) {
    // Add display functions here
 
@@ -148,16 +171,26 @@ void display(void) {
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   gluLookAt(eye_x,eye_y,eye_z,
+   gluLookAt(eye_x + pos_x,eye_y,eye_z + pos_z,
              at_x,at_y,at_z,
              0.0,1.0,0.0);
 
+  //  gluLookAt(0.10,15.0,0.0,
+  //            0.0,0.0,0.0,
+  //            0.0,1.0,0.0);
+
+  glPushMatrix();
+  glScalef(0.2, 0.2, 0.2);
    glTranslatef(pos_x, 0.0, pos_z);
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
 
-   drawCity();
    //Drawing robot here
    r->Draw();
+   glPopMatrix();
+
+  // glScalef(2.0, 2.0, 2.0);
+   drawCity();
+
 
 
    //Stuff here so that it will actually show the stuff which has been drawn
@@ -192,6 +225,7 @@ void init(void) {
   // Add init functions here
   glClearColor (0.0, 0.0, 0.0, 0.0);
   glEnable(GL_DEPTH_TEST);
+  initializeBuildings();
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -344,29 +378,6 @@ void keySpecialUp(int key, int x, int y) {
 
 void mouse(int button, int state, int x, int y) {
   // Add mouse functions here
-}
-
-void initializeBuildings()
-{
-    int buildingID = 0;
-    for (int i = cityMin_x; i < cityMax_x; i++)
-    {
-        for (int j = cityMin_z; j < cityMax_z; j++)
-        {
-            if(i%blockDim != 0 && j%blockDim !=0)
-            {
-                // chance of a building being created is 74%
-                double chanceOfBuilding = ((double) rand() / (RAND_MAX));
-                if (chanceOfBuilding > 0.26)
-                {
-                    float randomHeight = 0.50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(5-0.50)));
-                    buildings.push_back(new Building('r',i+streetWidth, j+streetWidth, 0.0f, (blockDim/4)-1.0, randomHeight, 3, buildingID));
-                    buildingID +=1;
-                }
-            }
-
-        }
-      }
 }
 
 int main(int argc, char** argv) {
