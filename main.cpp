@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <vector>
 #include <iostream>
 #include "./robot/robot.h"
+#include "./buildings/building.h" //Include the building class
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -34,7 +36,109 @@ float moveDistance = 1.0;
 
 bool isPaused = false;
 
+//define city specifications
+int blockDim = 10.0; //define block dimensions (square)
+float streetWidth = 6.0; //define street width
+int rowBlocks = 5; //Need to modify these to val 20.
+int colBlocks = 5;
+
+//Calculate city size
+//City width and length's are the sum of the dimensions of the blocks and streets
+const float cityW = (rowBlocks*blockDim) + (streetWidth*(rowBlocks-1));
+const float cityH = (colBlocks*blockDim) + (streetWidth*(rowBlocks-1));
+
+const int cityMin_x = 0 - (cityW/2);
+const int cityMax_x = cityW/2;
+const int cityMin_z = 0 - (cityH/2);
+const int cityMax_z = cityH/2;
+
+std::vector<Building*> buildings;
 Robot *r = new Robot();
+
+void drawGround()
+{
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glColor4f( 0.1f, 0.1f, 0.1f, 1.0f);
+    glVertex3f( cityMin_x, 0.0f, cityMin_z );
+    glVertex3f( cityMin_x, 0.0f, cityMax_z );
+    glVertex3f( cityMax_x, 0.0f, cityMax_z );
+    glVertex3f( cityMax_x, 0.0f, cityMin_z );
+    glEnd();
+    glPopMatrix();
+
+}
+
+void drawDottedLines(float start_x, float start_z, float end_x, float end_z)
+{
+
+    int16_t sixteen_bit_integer = 500;
+    glPushAttrib(GL_ENABLE_BIT);
+    glLineStipple(1, sixteen_bit_integer);
+    glEnable(GL_LINE_STIPPLE);
+    glBegin(GL_LINES);
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+    glNormal3f(0.0f,1.0f,0.0f);
+    glVertex3f(start_x,0.001,start_z);
+    glVertex3f(end_x,0.001,end_z);
+    glEnd();
+    glPopAttrib();
+
+}
+
+void drawRoadLines()
+{
+    for (GLint i = cityMin_x; i < cityMax_x+1; i++)
+    {
+        if(i%blockDim == 0)
+            drawDottedLines(i+0.5, cityMin_z+0.5, i+0.5, cityMax_z+0.5);
+    }
+    for (GLint j = cityMin_z; j < cityMax_z+0.5; j++)
+    {
+        if(j%blockDim == 0)
+            drawDottedLines(cityMin_x+0.5, j+0.5, cityMax_x+0.5, j+0.5);
+    }
+}
+
+void drawGrass()
+{
+    glPushMatrix();
+    for (GLint i = cityMin_x; i < cityMax_x; i+=3)
+    {
+        for (GLint j = cityMin_z; j < cityMax_z; j+=3)
+        {
+
+          /*
+                glBegin(GL_QUADS);
+                glNormal3f(0.0f, 1.0f, 0.0f);
+                glColor4f( 0.0f, 0.5f, 0.0f, 1.0f);
+                glVertex3f( i+(blockDim-streetWidth/2), 0.01f, j+(blockDim-streetWidth/2));
+                glVertex3f( i+(blockDim-streetWidth/2), 0.01f, j-(blockDim-streetWidth/2));
+                glVertex3f( i-(blockDim-streetWidth/2), 0.01f, j-(blockDim-streetWidth/2));
+                glVertex3f( i-(blockDim-streetWidth/2), 0.01f, j+(blockDim-streetWidth/2));
+                glEnd();
+
+                */
+
+        }
+    }
+    glPopMatrix();
+}
+
+void drawCity()
+{
+
+    for (int i = 0; i < buildings.size(); i++)
+    {
+      buildings[i]->Draw();
+    }
+
+  drawGround();
+  drawRoadLines();
+  drawGrass();
+
+}
 
 void display(void) {
    // Add display functions here
@@ -50,6 +154,8 @@ void display(void) {
 
    glTranslatef(pos_x, 0.0, pos_z);
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
+
+   drawCity();
    //Drawing robot here
    r->Draw();
 
