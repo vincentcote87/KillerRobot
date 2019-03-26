@@ -38,7 +38,7 @@ Robot *r = new Robot();
 
 void display(void) {
    // Add display functions here
-  
+
    //Initialization
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
@@ -52,7 +52,7 @@ void display(void) {
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
    //Drawing robot here
    r->Draw();
-   
+
 
    //Stuff here so that it will actually show the stuff which has been drawn
    glLoadIdentity();
@@ -79,7 +79,7 @@ void reshape(int w, int h) {
 
    window_width  = w;
    window_height = h;
-   
+
 }
 
 void init(void) {
@@ -222,8 +222,45 @@ void specialKeyboard(int key, int x, int y) {
   }
 }
 
+void keySpecialUp(int key, int x, int y) {
+  // Add special keyboard functions here
+  switch (key) {
+    case GLUT_KEY_F1:
+      break;
+     case GLUT_KEY_F2:
+	r->TurnHead("");
+	break;
+     case GLUT_KEY_F3:
+	r->TurnHead("");
+	break;
+  }
+}
+
 void mouse(int button, int state, int x, int y) {
   // Add mouse functions here
+}
+
+void initializeBuildings()
+{
+    int buildingID = 0;
+    for (int i = cityMin_x; i < cityMax_x; i++)
+    {
+        for (int j = cityMin_z; j < cityMax_z; j++)
+        {
+            if(i%blockDim != 0 && j%blockDim !=0)
+            {
+                // chance of a building being created is 74%
+                double chanceOfBuilding = ((double) rand() / (RAND_MAX));
+                if (chanceOfBuilding > 0.26)
+                {
+                    float randomHeight = 0.50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(5-0.50)));
+                    buildings.push_back(new Building('r',i+streetWidth, j+streetWidth, 0.0f, (blockDim/4)-1.0, randomHeight, 3, buildingID));
+                    buildingID +=1;
+                }
+            }
+
+        }
+      }
 }
 
 int main(int argc, char** argv) {
@@ -238,6 +275,7 @@ int main(int argc, char** argv) {
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
   glutSpecialFunc(specialKeyboard);
+  glutSpecialUpFunc(keySpecialUp);
   glutMouseFunc(mouse);
   glutMainLoop();
 
