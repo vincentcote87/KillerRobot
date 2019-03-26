@@ -11,6 +11,7 @@
 #include <string.h>  // For spring operations.
 #include "building.h" //Include the building class
 #include "../block/block.h"
+#include "../robot/robot.h"
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -40,17 +41,17 @@ GLfloat robotRotate = 0.0f;
 GLfloat antennaRotate = 0.0f;
 GLfloat robot_Center_x = 0.5f;
 GLfloat robot_Center_y = 0.0f;
-GLfloat robot_Center_z = 32.5f;
+GLfloat robot_Center_z = -30.0f;
 
 GLdouble eye_x = 0.5;
 GLdouble eye_y = 0.0;
-GLdouble eye_z = -50.0;
+GLdouble eye_z = -60.0;
 
 int blockID;
 
 //define city specifications
-int blockDim = 5.0; //define block dimensions (square)
-float streetWidth = 3.0; //define street width
+int blockDim = 10.0; //define block dimensions (square)
+float streetWidth = 6.0; //define street width
 int rowBlocks = 5;
 int colBlocks = 5;
 
@@ -66,6 +67,7 @@ const int cityMax_z = cityH/2;
 
 std::vector<Block*> blocks;
 std::vector<Building*> buildings;
+Robot *robot = new Robot();
 
 //////////////////////////////////////////////////////////
 // String rendering routine; leverages on GLUT routine. //
@@ -151,10 +153,12 @@ void drawGrass()
 
 void drawCity()
 {
+/*
     for (int i = 0; i < buildings.size(); i++)
     {
       buildings[i]->Draw();
     }
+    */
   drawGround();
   drawRoadLines();
   drawGrass();
@@ -169,24 +173,36 @@ void CallBackRenderScene(void)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
   glDisable(GL_LIGHTING);
-  glViewport(Window_Width * 0.2, 0, Window_Width*0.8, Window_Height);
+  //glViewport(Window_Width * 0.2, 0, Window_Width*0.8, Window_Height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(65.0f,(GLfloat) Window_Width/(GLfloat) Window_Height,0.01f,200.0f);
+  gluPerspective(30.0f,(GLfloat) Window_Width/(GLfloat) Window_Height,0.01f,50.0f);
   glMatrixMode(GL_MODELVIEW);
-  gluLookAt(eye_x, eye_y, eye_z, robot_Center_x, robot_Center_y, robot_Center_z, 0.0, 10.0, 0.0);
+  gluLookAt(eye_x, eye_y, eye_z, robot_Center_x, robot_Center_y, robot_Center_z, 0.0, 15.0, 0.0);
+
+  // Move the object back from the screen.
+  glTranslatef(0.0f,0.0f,-cityW);
+
+  // Rotate the calculated amount.
+  glRotatef(X_Rot,1.0f,0.0f,0.0f);
+  glRotatef(Y_Rot,0.0f,1.0f,0.0f);
 
   // draw the city
   drawCity();
+  robot->Draw();
   glPopMatrix();
-  glViewport(0, 0, Window_Width*0.2, Window_Height);
+  //glViewport(0, 0, Window_Width*0.2, Window_Height);
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  glOrtho(0, Window_Width, 0, Window_Height, -1, 1);
+  //glOrtho(0, Window_Width, 0, Window_Height, -1, 1);
   glColor4f(0.0f,1.0f,0.0f,1.0f);
   glMatrixMode(GL_MODELVIEW);
   glutSwapBuffers();
+
+  X_Rot+=X_Speed;
+  Y_Rot+=Y_Speed;
+
 }
 
 ////////////////////////////////////////////////////////////
