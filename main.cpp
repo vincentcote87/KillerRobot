@@ -94,8 +94,8 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     case 97: // a
       // r->Turn(3);
-      robotAngle += 90;
-      if (robotAngle >= 360)
+      robotAngle += 90.0;
+      if (robotAngle >= 360.0)
         robotAngle = 0.0;
       break;
     case 112: // p
@@ -105,8 +105,8 @@ void keyboard(unsigned char key, int x, int y) {
       break;
     case 113: // q
       robotAngle -= 90.0;
-      if (robotAngle <= 0.0)
-        robotAngle = 360.0;
+      if (robotAngle < 0.0)
+        robotAngle = 270.0;
       break;
     case 114: // r
       break;
