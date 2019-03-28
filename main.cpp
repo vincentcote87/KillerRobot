@@ -22,6 +22,8 @@ int window_height = 600;
 int window_position_x = 100;
 int window_position_y = 100;
 
+const float boundry = 170.0;
+
 int Y_Rot = 0;
 
 float eye_x = 0.0;
@@ -57,8 +59,6 @@ const int cityMax_z = (cityH/2);
 std::vector<Building*> buildings;
 Robot *r = new Robot();
 
-
-
 void drawGround()
 {
     glPushMatrix();
@@ -84,8 +84,8 @@ void drawDottedLines(float start_x, float start_z, float end_x, float end_z)
     glBegin(GL_LINES);
     glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
     glNormal3f(0.0f,1.0f,0.0f);
-    glVertex3f(start_x,0.1,start_z);
-    glVertex3f(end_x,0.1,end_z);
+    glVertex3f(start_x,0.01,start_z);
+    glVertex3f(end_x,0.01,end_z);
     glEnd();
     glPopAttrib();
 
@@ -135,10 +135,10 @@ void drawCity()
     }
 
   drawGround();
-  glPushMatrix();
+  // glPushMatrix();
   // glScalef(3.0, 3.0, 3.0);
-  glTranslatef(-4.0, 0.0, -4.0);
-  drawRoadLines();
+  // glTranslatef(-4.0, 0.0, -4.0);
+  // drawRoadLines();
   glPopMatrix();
   drawGrass();
 
@@ -204,21 +204,19 @@ void display(void) {
                0.0,1.0,0.0);
   }
 
-     glutWireCube(1.0);
-
   glPushMatrix();
 
    glTranslatef(pos_x, 0.0, pos_z);
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
    glScalef(0.25, 0.25, 0.25);
 
-   //Drawing robot here
+   //Drawing robo here
    r->Draw();
    glPopMatrix();
 
   glPushMatrix();
-  glTranslatef(-18.0, 0.0, -18.0);
-  glScalef(3.0, 3.0, 3.0);
+  glTranslatef(-2.0, 0.0, -2.0);
+  glScalef(4.0, 4.0, 4.0);
   drawCity();
   glPopMatrix();
 
@@ -252,7 +250,7 @@ void reshape(int w, int h) {
 
 void init(void) {
   // Add init functions here
-  glClearColor (0.0, 0.0, 0.0, 0.0);
+  glClearColor (0.10, 0.0, 0.40, 0.0);
   glEnable(GL_DEPTH_TEST);
   initializeBuildings();
 }
@@ -263,7 +261,7 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     case 97: // a
       // r->Turn(3);
-      if (static_cast<int>(pos_x) % 30 == 0.0 && static_cast<int>(pos_z) % 30 == 0) {
+      if (static_cast<int>(pos_x) % 16 == 0.0 && static_cast<int>(pos_z) % 16 == 0) {
         robotAngle += 90.0;
         if (robotAngle >= 360.0)
           robotAngle = 0.0;
@@ -275,7 +273,7 @@ void keyboard(unsigned char key, int x, int y) {
       isPaused = true;
       break;
     case 113: // q
-      if (static_cast<int>(pos_x) % 30 == 0.0 && static_cast<int>(pos_z) % 30 == 0) {
+      if (static_cast<int>(pos_x) % 16 == 0.0 && static_cast<int>(pos_z) % 16 == 0) {
         robotAngle -= 90.0;
         if (robotAngle < 0.0)
           robotAngle = 270.0;
@@ -288,15 +286,18 @@ void keyboard(unsigned char key, int x, int y) {
       break;
     case 122: //z
       // r->MoveForward();
-      if (robotAngle == 270.0) {
-        pos_x -= moveDistance;
-      } else if (robotAngle == 90.0) {
-        pos_x += moveDistance;
-      } else if (robotAngle == 0.0) {
-        pos_z += moveDistance;
-      } else if (robotAngle == 180.0) {
-        pos_z -= moveDistance;
+      if (pos_x < boundry && pos_x > -boundry && pos_z < boundry && pos_z > -boundry) {
+        if (robotAngle == 270.0) {
+          pos_x -= moveDistance;
+        } else if (robotAngle == 90.0) {
+          pos_x += moveDistance;
+        } else if (robotAngle == 0.0) {
+          pos_z += moveDistance;
+        } else if (robotAngle == 180.0) {
+          pos_z -= moveDistance;
+        }
       }
+
       std::cout<<"x = "<<pos_x<<" z = "<<pos_z<<std::endl;
       break;
     default:
@@ -399,7 +400,6 @@ void specialKeyboard(int key, int x, int y) {
 }
 
 void keySpecialUp(int key, int x, int y) {
-  // Add special keyboard functions here
   switch (key) {
     case GLUT_KEY_F1:
       break;
@@ -424,7 +424,7 @@ int main(int argc, char** argv) {
   glutInitWindowSize (window_width, window_height);
   glutInitWindowPosition (window_position_x, window_position_y);
   glutCreateWindow ("Killer Robot");
-  init ();
+  init();
   glutDisplayFunc(display);
   glutIdleFunc(display);
   glutReshapeFunc(reshape);

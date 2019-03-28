@@ -51,7 +51,7 @@ Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, flo
   centerZ = bCenterZ;
   hitCount = bHit;
   buildingID = bID;
-  int random = rand() % 10;
+  random = rand() % 10;
 }
 
 /*
