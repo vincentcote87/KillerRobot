@@ -11,6 +11,7 @@
 #include <string.h>  // For spring operations.
 #include "building.h" //Include the building class
 #include "../block/block.h"
+#include "../robot/robot.h"
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -36,8 +37,37 @@ float X_Speed = 0.0f;  // the rotation.
 float Y_Speed = 0.05f;
 float Z_Off   =-50.0f;
 
-// Create Building
-Block a(1.0, 1.0, 5);
+GLfloat robotRotate = 0.0f;
+GLfloat antennaRotate = 0.0f;
+GLfloat robot_Center_x = 0.5f;
+GLfloat robot_Center_y = 0.0f;
+GLfloat robot_Center_z = -30.0f;
+
+GLdouble eye_x = 0.5;
+GLdouble eye_y = 0.0;
+GLdouble eye_z = -60.0;
+
+int blockID;
+
+//define city specifications
+int blockDim = 10.0; //define block dimensions (square)
+float streetWidth = 6.0; //define street width
+int rowBlocks = 5;
+int colBlocks = 5;
+
+//Calculate city size
+//City width and length's are the sum of the dimensions of the blocks and streets
+const float cityW = (rowBlocks*blockDim) + (streetWidth*(rowBlocks-1));
+const float cityH = (colBlocks*blockDim) + (streetWidth*(rowBlocks-1));
+
+const int cityMin_x = 0 - (cityW/2);
+const int cityMax_x = cityW/2;
+const int cityMin_z = 0 - (cityH/2);
+const int cityMax_z = cityH/2;
+
+std::vector<Block*> blocks;
+std::vector<Building*> buildings;
+Robot *robot = new Robot();
 
 //////////////////////////////////////////////////////////
 // String rendering routine; leverages on GLUT routine. //
@@ -50,139 +80,129 @@ static void PrintString(void *font, char *str)
       glutBitmapCharacter(font,*str++);
 }
 
+
+void drawGround()
+{
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glColor4f( 0.1f, 0.1f, 0.1f, 1.0f);
+    glVertex3f( cityMin_x, 0.0f, cityMin_z );
+    glVertex3f( cityMin_x, 0.0f, cityMax_z );
+    glVertex3f( cityMax_x, 0.0f, cityMax_z );
+    glVertex3f( cityMax_x, 0.0f, cityMin_z );
+    glEnd();
+    glPopMatrix();
+
+}
+
+void drawDottedLines(GLfloat start_x, GLfloat start_z, GLfloat end_x, GLfloat end_z)
+{
+
+    int16_t sixteen_bit_integer = 500;
+    glPushAttrib(GL_ENABLE_BIT);
+    glLineStipple(1, sixteen_bit_integer);
+    glEnable(GL_LINE_STIPPLE);
+    glBegin(GL_LINES);
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+    glNormal3f(0.0f,1.0f,0.0f);
+    glVertex3f(start_x,0.001,start_z);
+    glVertex3f(end_x,0.001,end_z);
+    glEnd();
+    glPopAttrib();
+
+}
+
+void drawRoadLines()
+{
+    for (GLint i = cityMin_x; i < cityMax_x+1; i++)
+    {
+        if(i%blockDim == 0)
+            drawDottedLines(i+0.5, cityMin_z+0.5, i+0.5, cityMax_z+0.5);
+    }
+    for (GLint j = cityMin_z; j < cityMax_z+0.5; j++)
+    {
+        if(j%blockDim == 0)
+            drawDottedLines(cityMin_x+0.5, j+0.5, cityMax_x+0.5, j+0.5);
+    }
+}
+
+void drawGrass()
+{
+    glPushMatrix();
+    for (GLint i = cityMin_x; i < cityMax_x; i+=3)
+    {
+        for (GLint j = cityMin_z; j < cityMax_z; j+=3)
+        {
+                /*
+                glBegin(GL_QUADS);
+                glNormal3f(0.0f, 1.0f, 0.0f);
+                glColor4f( 0.0f, 0.5f, 0.0f, 1.0f);
+                glVertex3f( i+(blockDim/2), 0.01f, j+(blockDim/2));
+                glVertex3f( i+(blockDim/2), 0.01f, j-(blockDim/2));
+                glVertex3f( i-(blockDim/2), 0.01f, j-(blockDim/2));
+                glVertex3f( i-(blockDim/2), 0.01f, j+(blockDim/2));
+                glEnd();
+                */
+                blocks.push_back(new Block(i, j, 1));
+                blockID++;
+        }
+    }
+    glPopMatrix();
+}
+
+void drawCity()
+{
+/*
+    for (int i = 0; i < buildings.size(); i++)
+    {
+      buildings[i]->Draw();
+    }
+    */
+  drawGround();
+  drawRoadLines();
+  drawGrass();
+
+}
+
 /////////////////////////////////////////////////////////
 // Routine which actually does the drawing             //
 /////////////////////////////////////////////////////////
 void CallBackRenderScene(void)
 {
-   char buf[80]; // For our strings.
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
+  glDisable(GL_LIGHTING);
+  //glViewport(Window_Width * 0.2, 0, Window_Width*0.8, Window_Height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(30.0f,(GLfloat) Window_Width/(GLfloat) Window_Height,0.01f,50.0f);
+  glMatrixMode(GL_MODELVIEW);
+  gluLookAt(eye_x, eye_y, eye_z, robot_Center_x, robot_Center_y, robot_Center_z, 0.0, 15.0, 0.0);
 
-   // Need to manipulate the ModelView matrix to move our model around.
-   glMatrixMode(GL_MODELVIEW);
+  // Move the object back from the screen.
+  glTranslatef(0.0f,0.0f,-cityW);
 
-   // Reset to 0,0,0; no rotation, no scaling.
-   glLoadIdentity();
+  // Rotate the calculated amount.
+  glRotatef(X_Rot,1.0f,0.0f,0.0f);
+  glRotatef(Y_Rot,0.0f,1.0f,0.0f);
 
-   // Move the object back from the screen.
-   glTranslatef(0.0f,0.0f,Z_Off);
+  // draw the city
+  drawCity();
+  robot->Draw();
+  glPopMatrix();
+  //glViewport(0, 0, Window_Width*0.2, Window_Height);
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  //glOrtho(0, Window_Width, 0, Window_Height, -1, 1);
+  glColor4f(0.0f,1.0f,0.0f,1.0f);
+  glMatrixMode(GL_MODELVIEW);
+  glutSwapBuffers();
 
-   // Rotate the calculated amount.
-   glRotatef(X_Rot,1.0f,0.0f,0.0f);
-   glRotatef(Y_Rot,0.0f,1.0f,0.0f);
+  X_Rot+=X_Speed;
+  Y_Rot+=Y_Speed;
 
-   // Clear the color and depth buffers.
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   // OK, let's start drawing our planer quads.
-   glBegin(GL_QUADS);
-
-   //block
-   glNormal3f( 0.0f, 0.0f,0.0f);
-   glColor3f(0.5,0.0,0.2);
-
-   glVertex3f(-15.0f,0.0f,-15.0f);
-   glVertex3f(15.0f,0.0f,-15.0f);
-   glVertex3f(15.0f,0.0f,15.0f);
-   glVertex3f(-15.0f,0.0f,15.0f);
-
-   glEnd();
-
-   a.Draw();
-
-   /*
-   //bottom face
-   glNormal3f( 0.0f, 0.0f,B_base);
-   glColor4f(0.2,0.9,0.2,.5);
-
-   glVertex3f(-(B_width/2),B_base,-(B_width/2));
-   glVertex3f(B_width/2,B_base,-(B_width/2));
-   glVertex3f(B_width/2,B_base,B_width/2);
-   glVertex3f(-(B_width/2),B_base,B_width/2);
-
-   //top face
-   glNormal3f( 0.0f, 0.0f,B_base+B_height);
-   glColor4f(0.2,0.9,0.2,.5);
-
-   glVertex3f(-(B_width/2),B_base+B_height,-(B_width/2));
-   glVertex3f(B_width/2,B_base+B_height,-(B_width/2));
-   glVertex3f(B_width/2,B_base+B_height,B_width/2);
-   glVertex3f(-(B_width/2),B_base+B_height,B_width/2);
-
-   //Right face
-   glNormal3f( B_width/2, 0.0f, 0.0f);
-   glColor4f(0.2,0.9,0.2,.5);
-
-   glVertex3f( B_width/2, B_base, -(B_width/2));
-   glVertex3f( B_width/2,  B_base+B_height, -(B_width/2));
-   glVertex3f( B_width/2,  B_base+B_height,  B_width/2);
-   glVertex3f( B_width/2, B_base,  B_width/2);
-
-   //front face
-   glNormal3f( 0.0f, 0.0f, 1.0f);
-   glColor4f(0.2,0.9,0.2,.5);
-
-   glVertex3f(-(B_width/2), B_base,  B_width/2);
-   glVertex3f( B_width/2, B_base,  B_width/2);
-   glVertex3f( B_width/2,  B_base+B_height,  B_width/2);
-   glVertex3f(-(B_width/2),  B_base+B_height,  B_width/2);
-
-   //far face
-   glNormal3f( 0.0f, 0.0f,-(B_width/2));
-   glColor4f(0.2,0.9,0.2,.5);
-
-   glVertex3f(-(B_width/2), B_base, -(B_width/2));
-   glVertex3f(-(B_width/2),  B_base+B_height, -(B_width/2));
-   glVertex3f( B_width/2,  B_base+B_height, -(B_width/2));
-   glVertex3f( B_width/2, B_base, -(B_width/2));
-
-   //left face
-   glNormal3f(-(B_width/2), 0.0f, 0.0f);
-   glColor4f(0.2,0.9,0.2,.5);
-
-   glVertex3f(-(B_width/2), B_base+B_height, -(B_width/2));
-   glVertex3f(-(B_width/2), B_base+B_height,  B_width/2);
-   glVertex3f(-(B_width/2),  B_base,  B_width/2);
-   glVertex3f(-(B_width/2),  B_base, -(B_width/2));
-   */
-   // All polygons have been drawn.
-   glEnd();
-
-   // Move back to the origin
-   glLoadIdentity();
-
-   // We need to change the projection matrix for the text rendering.
-   glMatrixMode(GL_PROJECTION);
-
-   // But we like our current view too; so we save it here.
-   glPushMatrix();
-
-   // Display a string
-   // Now we set up a new projection for the text.
-   glLoadIdentity();
-   glOrtho(0,Window_Width,0,Window_Height,-30.0,30.0);
-   glColor4f(0.6,1.0,0.6,1.00);
-   sprintf(buf,"%s", DISPLAY_INFO); // Print the string into a buffer
-   glRasterPos2i(2,2);                         // Set the coordinate
-   PrintString(GLUT_BITMAP_HELVETICA_12, buf);  // Display the string.
-
-
-   // To ease, simply translate up.  Note we're working in screen
-   // pixels in this projection.
-   glTranslatef(6.0f, Window_Height - 14, 0.0f);
-
-   // Done with this special projection matrix.  Throw it away.
-   glPopMatrix();
-   glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-
-   // We start with GL_DECAL mode.
-   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
-
-   // All done drawing.  Let's show it.
-   glutSwapBuffers();
-
-   // Now let's do the motion calculations.
-   X_Rot+=X_Speed;
-   Y_Rot+=Y_Speed;
 }
 
 ////////////////////////////////////////////////////////////
@@ -260,24 +280,51 @@ void CallBackResizeScene(int Width, int Height)
    Window_Height = Height;
 }
 
+void initializeBuildings()
+{
+    int buildingID = 0;
+    for (int i = cityMin_x; i < cityMax_x; i++)
+    {
+        for (int j = cityMin_z; j < cityMax_z; j++)
+        {
+            if(i%blockDim != 0 && j%blockDim !=0)
+            {
+                // chance of a building being created is 74%
+                double chanceOfBuilding = ((double) rand() / (RAND_MAX));
+                if (chanceOfBuilding > 0.26)
+                {
+                    float randomHeight = 0.50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(5-0.50)));
+                    buildings.push_back(new Building('r',i+2.5, j+2.5, 0.0f, 5.0f, randomHeight, 3, buildingID));
+                    buildingID +=1;
+                }
+            }
+
+        }
+      }
+}
+
 ////////////////////////////////////////////////////////
 //   Setup your program before passing the control    //
 //   to the main OpenGL event loop.                   //
 ////////////////////////////////////////////////////////
 void MyInit(int Width, int Height)
 {
-   // Color to clear color buffer to.
-   glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+  glClearDepth(1.0);
+  glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
 
-   // Depth to clear depth buffer to; type of test.
-   glClearDepth(1.0);
-   glDepthFunc(GL_LESS);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_COLOR_MATERIAL);
+  glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+  glShadeModel(GL_SMOOTH);
 
-   // Enables Smooth Color Shading; try GL_FLAT for (lack of) fun.
-   glShadeModel(GL_SMOOTH);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_DEPTH_TEST);
+  glCullFace(GL_BACK);
+  glEnable(GL_CULL_FACE);
 
    // Load up the correct perspective matrix; using a callback directly.
    CallBackResizeScene(Width,Height);
+   initializeBuildings();
 }
 
 ///////////////////////////////////////////////////

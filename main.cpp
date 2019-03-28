@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <vector>
 #include <iostream>
 #include "./robot/robot.h"
+#include "./buildings/building.h" //Include the building class
 
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
@@ -21,10 +23,10 @@ int window_position_y = 100;
 int Y_Rot = 0;
 
 float eye_x = 0.0;
-float eye_y = 5.0;
-float eye_z = -15.0;
+float eye_y = 2.5;
+float eye_z = -6.0;
 float at_x = 0.0;
-float at_y = 3.0;
+float at_y = 2.0;
 float at_z = 0.0;
 
 float pos_x = 0.0;
@@ -34,11 +36,136 @@ float moveDistance = 1.0;
 
 bool isPaused = false;
 
+//define city specifications
+int blockDim = 10.0; //define block dimensions (square)
+float streetWidth = 6.0; //define street width
+int rowBlocks = 5; //Need to modify these to val 20.
+int colBlocks = 5;
+
+//Calculate city size
+//City width and length's are the sum of the dimensions of the blocks and streets
+const float cityW = (rowBlocks*blockDim) + (streetWidth*(rowBlocks-1));
+const float cityH = (colBlocks*blockDim) + (streetWidth*(rowBlocks-1));
+
+const int cityMin_x = 0 - (cityW/2);
+const int cityMax_x = cityW/2;
+const int cityMin_z = 0 - (cityH/2);
+const int cityMax_z = cityH/2;
+
+std::vector<Building*> buildings;
 Robot *r = new Robot();
+
+void drawGround()
+{
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glColor4f( 0.1f, 0.1f, 0.1f, 1.0f);
+    glVertex3f( cityMin_x, 0.0f, cityMin_z );
+    glVertex3f( cityMin_x, 0.0f, cityMax_z );
+    glVertex3f( cityMax_x, 0.0f, cityMax_z );
+    glVertex3f( cityMax_x, 0.0f, cityMin_z );
+    glEnd();
+    glPopMatrix();
+
+}
+
+void drawDottedLines(float start_x, float start_z, float end_x, float end_z)
+{
+
+    int16_t sixteen_bit_integer = 500;
+    glPushAttrib(GL_ENABLE_BIT);
+    glLineStipple(1, sixteen_bit_integer);
+    glEnable(GL_LINE_STIPPLE);
+    glBegin(GL_LINES);
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+    glNormal3f(0.0f,1.0f,0.0f);
+    glVertex3f(start_x,0.001,start_z);
+    glVertex3f(end_x,0.001,end_z);
+    glEnd();
+    glPopAttrib();
+
+}
+
+void drawRoadLines()
+{
+    for (GLint i = cityMin_x; i < cityMax_x+1; i++)
+    {
+        if(i%blockDim == 0)
+            drawDottedLines(i+0.5, cityMin_z+0.5, i+0.5, cityMax_z+0.5);
+    }
+    for (GLint j = cityMin_z; j < cityMax_z+0.5; j++)
+    {
+        if(j%blockDim == 0)
+            drawDottedLines(cityMin_x+0.5, j+0.5, cityMax_x+0.5, j+0.5);
+    }
+}
+
+void drawGrass()
+{
+    glPushMatrix();
+    for (GLint i = cityMin_x; i < cityMax_x; i+=3)
+    {
+        for (GLint j = cityMin_z; j < cityMax_z; j+=3)
+        {
+
+          /*
+                glBegin(GL_QUADS);
+                glNormal3f(0.0f, 1.0f, 0.0f);
+                glColor4f( 0.0f, 0.5f, 0.0f, 1.0f);
+                glVertex3f( i+(blockDim-streetWidth/2), 0.01f, j+(blockDim-streetWidth/2));
+                glVertex3f( i+(blockDim-streetWidth/2), 0.01f, j-(blockDim-streetWidth/2));
+                glVertex3f( i-(blockDim-streetWidth/2), 0.01f, j-(blockDim-streetWidth/2));
+                glVertex3f( i-(blockDim-streetWidth/2), 0.01f, j+(blockDim-streetWidth/2));
+                glEnd();
+
+                */
+
+        }
+    }
+    glPopMatrix();
+}
+
+void drawCity()
+{
+
+    for (int i = 0; i < buildings.size(); i++)
+    {
+      buildings[i]->Draw();
+    }
+
+  drawGround();
+  drawRoadLines();
+  drawGrass();
+
+}
+
+void initializeBuildings()
+{
+    int buildingID = 0;
+    for (int i = cityMin_x; i < cityMax_x; i++)
+    {
+        for (int j = cityMin_z; j < cityMax_z; j++)
+        {
+            if(i%blockDim != 0 && j%blockDim !=0)
+            {
+                // chance of a building being created is 74%
+                double chanceOfBuilding = ((double) rand() / (RAND_MAX));
+                if (chanceOfBuilding > 0.50)
+                {
+                    float randomHeight = 0.50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(5-0.50)));
+                    buildings.push_back(new Building('r',i+streetWidth, j+streetWidth, 0.0f, (blockDim/4)-1.0, randomHeight, 3, buildingID));
+                    buildingID +=1;
+                }
+            }
+
+        }
+      }
+}
 
 void display(void) {
    // Add display functions here
-  
+
    //Initialization
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
@@ -93,13 +220,25 @@ void display(void) {
 
   // std::cout<<eye_x - pos_x<<std::endl;
 
+  //  gluLookAt(0.10,15.0,0.0,
+  //            0.0,0.0,0.0,
+  //            0.0,1.0,0.0);
+
+  glPushMatrix();
+
    glTranslatef(pos_x, 0.0, pos_z);
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
+   glScalef(0.25, 0.25, 0.25);
+
    //Drawing robot here
    r->Draw();
+   glPopMatrix();
 
-  //  glPushMatrix();
-
+  glPushMatrix();
+  glTranslatef(12.0, 0.0, 0.0);
+  glScalef(3.0, 3.0, 3.0);
+  drawCity();
+  glPopMatrix();
 
    //Stuff here so that it will actually show the stuff which has been drawn
    glLoadIdentity();
@@ -126,18 +265,19 @@ void reshape(int w, int h) {
 
    window_width  = w;
    window_height = h;
-   
+
 }
 
 void init(void) {
   // Add init functions here
   glClearColor (0.0, 0.0, 0.0, 0.0);
   glEnable(GL_DEPTH_TEST);
+  initializeBuildings();
 }
 
 void keyboard(unsigned char key, int x, int y) {
   // Add regular keyboard functions here
-  if (!isPaused) {
+   if (!isPaused) {
     switch (key) {
     case 97: // a
       // r->Turn(3);
@@ -168,6 +308,7 @@ void keyboard(unsigned char key, int x, int y) {
       } else if (robotAngle == 180.0) {
         pos_z -= moveDistance;
       }
+      std::cout<<pos_x<<std::endl;
       // pos_z += 1.0;
       break;
     default:
