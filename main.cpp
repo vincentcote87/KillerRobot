@@ -23,10 +23,10 @@ int window_position_y = 100;
 int Y_Rot = 0;
 
 float eye_x = 0.0;
-float eye_y = 5.0;
-float eye_z = -15.0;
+float eye_y = 2.5;
+float eye_z = -6.0;
 float at_x = 0.0;
-float at_y = 3.0;
+float at_y = 2.0;
 float at_z = 0.0;
 
 float pos_x = 0.0;
@@ -172,7 +172,7 @@ void display(void) {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    gluLookAt(eye_x + pos_x,eye_y,eye_z + pos_z,
-             at_x,at_y,at_z,
+             at_x + pos_x,at_y,at_z + pos_z,
              0.0,1.0,0.0);
 
   //  gluLookAt(0.10,15.0,0.0,
@@ -180,16 +180,20 @@ void display(void) {
   //            0.0,1.0,0.0);
 
   glPushMatrix();
-  glScalef(0.2, 0.2, 0.2);
+
    glTranslatef(pos_x, 0.0, pos_z);
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
+   glScalef(0.25, 0.25, 0.25);
 
    //Drawing robot here
    r->Draw();
    glPopMatrix();
 
-  // glScalef(2.0, 2.0, 2.0);
-   drawCity();
+  glPushMatrix();
+  glTranslatef(12.0, 0.0, 0.0);
+  glScalef(3.0, 3.0, 3.0);
+  drawCity();
+  glPopMatrix();
 
 
 
@@ -230,12 +234,12 @@ void init(void) {
 
 void keyboard(unsigned char key, int x, int y) {
   // Add regular keyboard functions here
-  if (!isPaused) {
+   if (!isPaused) {
     switch (key) {
     case 97: // a
       // r->Turn(3);
-      robotAngle += 90;
-      if (robotAngle >= 360)
+      robotAngle += 90.0;
+      if (robotAngle >= 360.0)
         robotAngle = 0.0;
       break;
     case 112: // p
@@ -245,8 +249,8 @@ void keyboard(unsigned char key, int x, int y) {
       break;
     case 113: // q
       robotAngle -= 90.0;
-      if (robotAngle <= 0.0)
-        robotAngle = 360.0;
+      if (robotAngle < 0.0)
+        robotAngle = 270.0;
       break;
     case 114: // r
       break;
@@ -261,6 +265,7 @@ void keyboard(unsigned char key, int x, int y) {
       } else if (robotAngle == 180.0) {
         pos_z -= moveDistance;
       }
+      std::cout<<pos_x<<std::endl;
       // pos_z += 1.0;
       break;
     default:
