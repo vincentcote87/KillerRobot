@@ -39,8 +39,8 @@ bool isPaused = false;
 //define city specifications
 int blockDim = 10.0; //define block dimensions (square)
 float streetWidth = 6.0; //define street width
-int rowBlocks = 5; //Need to modify these to val 20.
-int colBlocks = 5;
+int rowBlocks = 20; //Need to modify these to val 20.
+int colBlocks = 20;
 
 //Calculate city size
 //City width and length's are the sum of the dimensions of the blocks and streets
@@ -48,9 +48,9 @@ const float cityW = (rowBlocks*blockDim) + (streetWidth*(rowBlocks-1));
 const float cityH = (colBlocks*blockDim) + (streetWidth*(rowBlocks-1));
 
 const int cityMin_x = 0 - (cityW/2);
-const int cityMax_x = cityW/2;
+const int cityMax_x = (cityW/2);
 const int cityMin_z = 0 - (cityH/2);
-const int cityMax_z = cityH/2;
+const int cityMax_z = (cityH/2);
 
 std::vector<Building*> buildings;
 Robot *r = new Robot();
@@ -80,8 +80,8 @@ void drawDottedLines(float start_x, float start_z, float end_x, float end_z)
     glBegin(GL_LINES);
     glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
     glNormal3f(0.0f,1.0f,0.0f);
-    glVertex3f(start_x,0.001,start_z);
-    glVertex3f(end_x,0.001,end_z);
+    glVertex3f(start_x,0.1,start_z);
+    glVertex3f(end_x,0.1,end_z);
     glEnd();
     glPopAttrib();
 
@@ -92,12 +92,12 @@ void drawRoadLines()
     for (GLint i = cityMin_x; i < cityMax_x+1; i++)
     {
         if(i%blockDim == 0)
-            drawDottedLines(i+0.5, cityMin_z+0.5, i+0.5, cityMax_z+0.5);
+            drawDottedLines(i+blockDim, cityMin_z+blockDim, i+blockDim, cityMax_z+blockDim);
     }
-    for (GLint j = cityMin_z; j < cityMax_z+0.5; j++)
+    for (GLint j = cityMin_z; j < cityMax_z+blockDim; j++)
     {
         if(j%blockDim == 0)
-            drawDottedLines(cityMin_x+0.5, j+0.5, cityMax_x+0.5, j+0.5);
+            drawDottedLines(cityMin_x+blockDim, j+blockDim, cityMax_x+blockDim, j+blockDim);
     }
 }
 
@@ -135,7 +135,11 @@ void drawCity()
     }
 
   drawGround();
+  glPushMatrix();
+  // glScalef(3.0, 3.0, 3.0);
+  glTranslatef(-4.0, 0.0, -4.0);
   drawRoadLines();
+  glPopMatrix();
   drawGrass();
 
 }
@@ -171,22 +175,6 @@ void display(void) {
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // if (robotAngle == 90 || robotAngle == 270) {
-  //   float tempEye = eye_x;
-  //   float tempAt = at_x;
-  //   eye_x = eye_z;
-  //   eye_z = tempEye;
-  //   at_x = at_z;
-  //   at_z = tempAt;
-
-  // }
-
-  // gluLookAt((eye_x + pos_x),eye_y,(eye_z + pos_z),
-  //             at_x + pos_x,at_y,(at_z + pos_z),
-  //             0.0,1.0,0.0);
-
-  // std::cout<<robotAngle<<std::endl;
-
   if (robotAngle == 0.0) {
     gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
               at_x + pos_x,at_y,at_z + pos_z,
@@ -208,21 +196,7 @@ void display(void) {
                0.0,1.0,0.0);
   }
 
-  std::cout<<eye_x+pos_x<<std::endl;
-  // std::cout<<pos_z<<std::endl;
-
-  // gluLookAt(eye_x,eye_y,eye_z,
-  //            at_x,at_y,at_z,
-  //            0.0,1.0,0.0);
-
      glutWireCube(1.0);
-
-
-  // std::cout<<eye_x - pos_x<<std::endl;
-
-  //  gluLookAt(0.10,15.0,0.0,
-  //            0.0,0.0,0.0,
-  //            0.0,1.0,0.0);
 
   glPushMatrix();
 
@@ -235,7 +209,7 @@ void display(void) {
    glPopMatrix();
 
   glPushMatrix();
-  glTranslatef(12.0, 0.0, 0.0);
+  glTranslatef(-18.0, 0.0, -18.0);
   glScalef(3.0, 3.0, 3.0);
   drawCity();
   glPopMatrix();
@@ -281,9 +255,11 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     case 97: // a
       // r->Turn(3);
-      robotAngle += 90.0;
-      if (robotAngle >= 360.0)
-        robotAngle = 0.0;
+      if (static_cast<int>(pos_x) % 30 == 0.0 && static_cast<int>(pos_z) % 30 == 0) {
+        robotAngle += 90.0;
+        if (robotAngle >= 360.0)
+          robotAngle = 0.0;
+      }
       break;
     case 112: // p
       glutDisplayFunc(display);
@@ -291,11 +267,16 @@ void keyboard(unsigned char key, int x, int y) {
       isPaused = true;
       break;
     case 113: // q
-      robotAngle -= 90.0;
-      if (robotAngle < 0.0)
-        robotAngle = 270.0;
+      if (static_cast<int>(pos_x) % 30 == 0.0 && static_cast<int>(pos_z) % 30 == 0) {
+        robotAngle -= 90.0;
+        if (robotAngle < 0.0)
+          robotAngle = 270.0;
+      }
       break;
     case 114: // r
+      pos_x = 0.0;
+      pos_z = 0.0;
+      robotAngle = 0.0;
       break;
     case 122: //z
       // r->MoveForward();
@@ -308,8 +289,7 @@ void keyboard(unsigned char key, int x, int y) {
       } else if (robotAngle == 180.0) {
         pos_z -= moveDistance;
       }
-      std::cout<<pos_x<<std::endl;
-      // pos_z += 1.0;
+      std::cout<<"x = "<<pos_x<<" z = "<<pos_z<<std::endl;
       break;
     default:
       break;
@@ -335,74 +315,74 @@ void specialKeyboard(int key, int x, int y) {
       break;
     case GLUT_KEY_F4:
       eye_x = 0.0;
-      eye_y = 5.0;
-      eye_z = -15.0;
+      eye_y = 2.5;
+      eye_z = -6.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 2.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F5:
-      eye_x = 15.0;
-      eye_y = 10.0;
-      eye_z = -15.0;
+      eye_x = 1.0;
+      eye_y = 3.5;
+      eye_z = -6.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F6:
-      eye_x = -15.0;
-      eye_y = 10.0;
-      eye_z = -15.0;
+      eye_x = -1.0;
+      eye_y = 3.5;
+      eye_z = -6.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F7:
-      eye_x = -15.0;
-      eye_y = 10.0;
-      eye_z = 15.0;
+      eye_x = -1.0;
+      eye_y = 3.5;
+      eye_z = 6.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F8:
-      eye_x = 15.0;
-      eye_y = 10.0;
-      eye_z = 15.0;
+      eye_x = 1.0;
+      eye_y = 3.5;
+      eye_z = 6.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F9:
-      eye_x = 25.0;
-      eye_y = 15.0;
-      eye_z = -35.0;
+      eye_x = 2.0;
+      eye_y = 5.0;
+      eye_z = -8.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F10:
-      eye_x = -25.0;
-      eye_y = 15.0;
-      eye_z = -35.0;
+      eye_x = -2.0;
+      eye_y = 5.0;
+      eye_z = -8.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F11:
-      eye_x = -25.0;
-      eye_y = 15.0;
-      eye_z = 35.0;
+      eye_x = -2.0;
+      eye_y = 5.0;
+      eye_z = 8.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     case GLUT_KEY_F12:
-      eye_x = 25.0;
-      eye_y = 15.0;
-      eye_z = 35.0;
+      eye_x = 2.0;
+      eye_y = 5.0;
+      eye_z = 8.0;
       at_x = 0.0;
-      at_y = 3.0;
+      at_y = 1.0;
       at_z = 0.0;
       break;
     default:

@@ -61,9 +61,9 @@ const float cityW = (rowBlocks*blockDim) + (streetWidth*(rowBlocks-1));
 const float cityH = (colBlocks*blockDim) + (streetWidth*(rowBlocks-1));
 
 const int cityMin_x = 0 - (cityW/2);
-const int cityMax_x = cityW/2;
+const int cityMax_x = (cityW/2);
 const int cityMin_z = 0 - (cityH/2);
-const int cityMax_z = cityH/2;
+const int cityMax_z = (cityH/2);
 
 std::vector<Block*> blocks;
 std::vector<Building*> buildings;
