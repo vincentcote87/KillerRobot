@@ -51,6 +51,7 @@ Building::Building(char bShape, float bCenterX, float bCenterZ, float bBase, flo
   centerZ = bCenterZ;
   hitCount = bHit;
   buildingID = bID;
+  int random = rand() % 10;
 }
 
 /*
@@ -62,12 +63,13 @@ param[\out]: none
 */
 void Building::Draw()
 {
-  if (shape == 'r')
+  if (shape == true)
   {
     glBegin(GL_QUADS);
     //bottom face
     glNormal3f( 0.0f, base, 0.0f);
-    glColor3f(0.64f, 0.64f, 0.64f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
 
     glVertex3f(centerX-(width/2),base, centerZ-(width/2));
     glVertex3f(centerX+(width/2),base, centerZ-(width/2));
@@ -76,7 +78,8 @@ void Building::Draw()
 
     //top face
     glNormal3f( 0.0f, 0.0f,base+height);
-    glColor3f(0.64f, 0.64f, 0.64f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
 
     glVertex3f( centerX-(width/2), base+height, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base+height, centerZ-(width/2));
@@ -85,7 +88,8 @@ void Building::Draw()
 
     //Right face
     glNormal3f(centerX+(width/2), 0.0f, 0.0f);
-    glColor3f(0.64f, 0.64f, 0.64f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
 
     glVertex3f( centerX+(width/2), base, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base+height, centerZ-(width/2));
@@ -94,7 +98,8 @@ void Building::Draw()
 
     //front face
     glNormal3f( 0.0f, 0.0f, 1.0f);
-    glColor3f(0.64f, 0.64f, 0.64f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
 
     glVertex3f(centerX-(width/2), base, centerZ+(width/2));
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
@@ -103,7 +108,8 @@ void Building::Draw()
 
     //far face
     glNormal3f( 0.0f, 0.0f,centerZ-(width/2));
-    glColor3f(0.64f, 0.64f, 0.64f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
 
     glVertex3f(centerX-(width/2), base, centerZ-(width/2));
     glVertex3f(centerX-(width/2), base+height, centerZ-(width/2));
@@ -112,32 +118,37 @@ void Building::Draw()
 
     //left face
     glNormal3f(centerX-(width/2), 0.0f, 0.0f);
-    glColor3f(0.64f, 0.64f, 0.64f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
 
     glVertex3f(centerX-(width/2), base+height, centerZ-(width/2));
     glVertex3f(centerX-(width/2), base+height, centerZ+(width/2));
     glVertex3f(centerX-(width/2), base, centerZ+(width/2));
     glVertex3f(centerX-(width/2), base, centerZ-(width/2));
     glEnd();
-  }else if(shape == 'p'){
+  }else{
     //Pyramid
     glBegin( GL_TRIANGLES );
-    glColor3f(0.94f, 0.94f, 0.94f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
     glVertex3f( centerX, height, centerZ );
     glVertex3f( centerX-(width/2), base, centerZ+(width/2) );
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
 
-    glColor3f(0.94f, 0.94f, 0.94f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
     glVertex3f( centerX, height, centerZ);
     glVertex3f( centerX-(width/2), base, centerZ+(width/2));
     glVertex3f( centerX-(width/2), base, centerZ-(width/2));
 
-    glColor3f(0.94f, 0.94f, 0.94f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
     glVertex3f( centerX, height, centerZ);
     glVertex3f( centerX-(width/2), base, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
 
-    glColor3f(0.94f, 0.94f, 0.94f);
+    //glColor3f(0.64f, 0.64f, 0.64f);
+    glColor3f(1.0/random, 1.0/random, 1.0/random);
     glVertex3f( centerX-(width/2), base, centerZ+(width/2));
     glVertex3f( centerX-(width/2), base, centerZ-(width/2));
     glVertex3f( centerX+(width/2), base, centerZ+(width/2));
