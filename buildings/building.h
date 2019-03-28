@@ -12,8 +12,8 @@ class Building  {
         width,
         height;
   int hitCount;
-
-  char shape;
+  int random;
+  bool shape;
 
   public:
     int buildingID;
