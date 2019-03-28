@@ -54,25 +54,34 @@ void display(void) {
 
   // }
 
-  gluLookAt((eye_x + pos_x),eye_y,(eye_z + pos_z),
-              at_x + pos_x,at_y,(at_z + pos_z),
-              0.0,1.0,0.0);
-
-  // if (robotAngle == 0.0) {
-  //   gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
-  //             at_x + pos_x,at_y,at_z + pos_z,
+  // gluLookAt((eye_x + pos_x),eye_y,(eye_z + pos_z),
+  //             at_x + pos_x,at_y,(at_z + pos_z),
   //             0.0,1.0,0.0);
-  // }
-  // else if(robotAngle == 90.0) {
-  //   gluLookAt((eye_z + pos_z),eye_y,eye_x + pos_x,
-  //             at_x + pos_x,at_y,at_z + pos_z,
-  //              0.0,1.0,0.0);
-  // }
-  // else if(robotAngle == 180.0) {
-  //   gluLookAt((eye_x + pos_x),eye_y,-(eye_z + pos_z),
-  //             at_x + pos_x,at_y,at_z + pos_z,
-  //              0.0,1.0,0.0);
-  // }
+
+  // std::cout<<robotAngle<<std::endl;
+
+  if (robotAngle == 0.0) {
+    gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
+              at_x + pos_x,at_y,at_z + pos_z,
+              0.0,1.0,0.0);
+  }
+  else if(robotAngle == 90.0) {
+    gluLookAt((eye_z + pos_x),eye_y,eye_x + pos_z,
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+  else if(robotAngle == 180.0) {
+    gluLookAt(eye_x + pos_x,eye_y,(-eye_z + pos_z),
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+  else {
+    gluLookAt((-eye_z + pos_x),eye_y,(eye_x + pos_z),
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+
+  std::cout<<eye_x+pos_x<<std::endl;
   // std::cout<<pos_z<<std::endl;
 
   // gluLookAt(eye_x,eye_y,eye_z,
