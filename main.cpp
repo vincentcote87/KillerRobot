@@ -171,9 +171,54 @@ void display(void) {
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   gluLookAt(eye_x + pos_x,eye_y,eye_z + pos_z,
-             at_x + pos_x,at_y,at_z + pos_z,
-             0.0,1.0,0.0);
+  // if (robotAngle == 90 || robotAngle == 270) {
+  //   float tempEye = eye_x;
+  //   float tempAt = at_x;
+  //   eye_x = eye_z;
+  //   eye_z = tempEye;
+  //   at_x = at_z;
+  //   at_z = tempAt;
+
+  // }
+
+  // gluLookAt((eye_x + pos_x),eye_y,(eye_z + pos_z),
+  //             at_x + pos_x,at_y,(at_z + pos_z),
+  //             0.0,1.0,0.0);
+
+  // std::cout<<robotAngle<<std::endl;
+
+  if (robotAngle == 0.0) {
+    gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
+              at_x + pos_x,at_y,at_z + pos_z,
+              0.0,1.0,0.0);
+  }
+  else if(robotAngle == 90.0) {
+    gluLookAt((eye_z + pos_x),eye_y,eye_x + pos_z,
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+  else if(robotAngle == 180.0) {
+    gluLookAt(eye_x + pos_x,eye_y,(-eye_z + pos_z),
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+  else {
+    gluLookAt((-eye_z + pos_x),eye_y,(eye_x + pos_z),
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+
+  std::cout<<eye_x+pos_x<<std::endl;
+  // std::cout<<pos_z<<std::endl;
+
+  // gluLookAt(eye_x,eye_y,eye_z,
+  //            at_x,at_y,at_z,
+  //            0.0,1.0,0.0);
+
+     glutWireCube(1.0);
+
+
+  // std::cout<<eye_x - pos_x<<std::endl;
 
   //  gluLookAt(0.10,15.0,0.0,
   //            0.0,0.0,0.0,
@@ -194,8 +239,6 @@ void display(void) {
   glScalef(3.0, 3.0, 3.0);
   drawCity();
   glPopMatrix();
-
-
 
    //Stuff here so that it will actually show the stuff which has been drawn
    glLoadIdentity();
