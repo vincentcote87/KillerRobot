@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <ctime>
+#include <random>
 #include "./robot/robot.h"
 #include "./buildings/building.h" //Include the building class
 
@@ -37,8 +39,8 @@ float moveDistance = 1.0;
 bool isPaused = false;
 
 //define city specifications
-int blockDim = 10.0; //define block dimensions (square)
-float streetWidth = 6.0; //define street width
+int blockDim = 4; //define block dimensions (square)
+float streetWidth = 0.5; //define street width
 int rowBlocks = 20; //Need to modify these to val 20.
 int colBlocks = 20;
 
@@ -54,6 +56,8 @@ const int cityMax_z = (cityH/2);
 
 std::vector<Building*> buildings;
 Robot *r = new Robot();
+
+
 
 void drawGround()
 {
@@ -92,35 +96,31 @@ void drawRoadLines()
     for (GLint i = cityMin_x; i < cityMax_x+1; i++)
     {
         if(i%blockDim == 0)
-            drawDottedLines(i+blockDim, cityMin_z+blockDim, i+blockDim, cityMax_z+blockDim);
+            drawDottedLines(i+streetWidth, cityMin_z+streetWidth, i+streetWidth, cityMax_z+streetWidth);
     }
-    for (GLint j = cityMin_z; j < cityMax_z+blockDim; j++)
+    for (GLint j = cityMin_z; j < cityMax_z+streetWidth; j++)
     {
         if(j%blockDim == 0)
-            drawDottedLines(cityMin_x+blockDim, j+blockDim, cityMax_x+blockDim, j+blockDim);
+            drawDottedLines(cityMin_x+streetWidth, j+streetWidth, cityMax_x+streetWidth, j+streetWidth);
     }
 }
 
 void drawGrass()
 {
     glPushMatrix();
-    for (GLint i = cityMin_x; i < cityMax_x; i+=3)
+    for (GLint i = cityMin_x; i < cityMax_x; i++)
     {
-        for (GLint j = cityMin_z; j < cityMax_z; j+=3)
+        for (GLint j = cityMin_z; j < cityMax_z; j++)
         {
-
-          /*
+            if(i%blockDim != 0 && j%blockDim !=0)
                 glBegin(GL_QUADS);
                 glNormal3f(0.0f, 1.0f, 0.0f);
                 glColor4f( 0.0f, 0.5f, 0.0f, 1.0f);
-                glVertex3f( i+(blockDim-streetWidth/2), 0.01f, j+(blockDim-streetWidth/2));
-                glVertex3f( i+(blockDim-streetWidth/2), 0.01f, j-(blockDim-streetWidth/2));
-                glVertex3f( i-(blockDim-streetWidth/2), 0.01f, j-(blockDim-streetWidth/2));
-                glVertex3f( i-(blockDim-streetWidth/2), 0.01f, j+(blockDim-streetWidth/2));
+                glVertex3f( i+0.9+streetWidth, 0.01f, j+0.1-streetWidth);
+                glVertex3f( i+0.1-streetWidth, 0.01f, j+0.1-streetWidth);
+                glVertex3f( i+0.1-streetWidth, 0.01f, j+0.9+streetWidth);
+                glVertex3f( i+0.9+streetWidth, 0.01f, j+0.9+streetWidth);
                 glEnd();
-
-                */
-
         }
     }
     glPopMatrix();
@@ -155,10 +155,18 @@ void initializeBuildings()
             {
                 // chance of a building being created is 74%
                 double chanceOfBuilding = ((double) rand() / (RAND_MAX));
-                if (chanceOfBuilding > 0.50)
+                if (chanceOfBuilding > 0.36)
                 {
-                    float randomHeight = 0.50 + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(5-0.50)));
-                    buildings.push_back(new Building('r',i+streetWidth, j+streetWidth, 0.0f, (blockDim/4)-1.0, randomHeight, 3, buildingID));
+                    float randomHeight = 5 + rand() % 20;
+                    int randBuildType = rand() % 2;
+                    int hits = -1 + rand() % 5;
+                    if (hits == 0){
+                      hits = 1;
+                    }else if(hits == 2){
+                      hits =3;
+                    }
+                    buildings.push_back(new Building(randBuildType,i+0.1, j+0.1, 0.0f, rand() % 2, randomHeight, hits, buildingID));
+                    std::cout << hits << std::endl;
                     buildingID +=1;
                 }
             }
@@ -410,12 +418,14 @@ void mouse(int button, int state, int x, int y) {
 
 int main(int argc, char** argv) {
 
+  srand(time(0));
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize (window_width, window_height);
   glutInitWindowPosition (window_position_x, window_position_y);
   glutCreateWindow ("Killer Robot");
   init ();
+  glutDisplayFunc(display);
   glutIdleFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
