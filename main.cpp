@@ -138,8 +138,8 @@ void drawCity()
   // glPushMatrix();
   // glScalef(3.0, 3.0, 3.0);
   // glTranslatef(-4.0, 0.0, -4.0);
-  // drawRoadLines();
-  glPopMatrix();
+  drawRoadLines();
+  // glPopMatrix();
   drawGrass();
 
 }
