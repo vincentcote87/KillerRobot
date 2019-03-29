@@ -59,6 +59,111 @@ const int cityMax_z = (cityH/2);
 std::vector<Building*> buildings;
 Robot *r = new Robot();
 
+// Some default lights, values are adjusted using the arrow keys
+enum my_lights { spot_down, spot_right, spot_left, diffuse, off };
+my_lights light = off; //set off as default
+
+GLfloat ambient_RGBA[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+GLfloat diffuse_RGBA[4] = {0.4f, 0.4f, 0.4f, 1.0f};
+GLfloat specular_RGBA[4] = {0.04f, 0.04f, 0.04f, 1.0f};
+
+GLfloat lowShine = 1.0f;
+GLfloat highShine = 100.0f;
+
+GLfloat light0_Position [4] = {0, 0.01, 0, 0};
+GLfloat coneDirection [3] = {0, -30, 0};
+GLfloat coneAngle = 0.15;
+
+GLfloat light1_Position[] = { -100.0f, 100.0f, 100.0f, 0.0 };
+GLfloat light1_Direction [] = {-1.0f,-1.0f,-1.0f};
+
+void getLight(my_lights light)
+{
+    glEnable(GL_LIGHTING);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    switch(light)
+    {
+        case diffuse:
+            diffuse_RGBA[0] = 0.6;
+            diffuse_RGBA[1] = 0.6;
+            diffuse_RGBA[2] = 0.6;
+            glDisable(GL_LIGHT0);
+            glEnable(GL_LIGHT1);
+            glEnable(GL_COLOR_MATERIAL);
+            glLightfv(GL_LIGHT1, GL_POSITION, light1_Position);
+            glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse_RGBA);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse_RGBA);
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, highShine);
+            return;
+        case off:
+        {
+            diffuse_RGBA[0] = 0.0;
+            diffuse_RGBA[1] = 0.0;
+            diffuse_RGBA[2] = 0.0;
+            glDisable(GL_LIGHT0);
+            glEnable(GL_LIGHT1);
+            glLightfv(GL_LIGHT1, GL_POSITION, light0_Position);
+            glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse_RGBA);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE, diffuse_RGBA);
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, lowShine);
+            return;
+        }
+        case spot_down:
+        {
+            specular_RGBA[0] = 0.5;
+            specular_RGBA[1] = 0.5;
+            specular_RGBA[2] = 0.5;
+            light0_Position [0] = 0;
+            light0_Position [1] = 100;
+            light0_Position [2] = 4;
+            coneDirection [0] = 0;
+            coneDirection [1] = -1;
+            coneDirection [2] = -0.04;
+            break;
+
+        }
+        case spot_left:
+        {
+            specular_RGBA[0] = 0.5;
+            specular_RGBA[1] = 0.5;
+            specular_RGBA[2] = 0.0;
+            light0_Position [0] = -100;
+            light0_Position [1] =  100;
+            light0_Position [2] = -100;
+            coneDirection [0] = 1;
+            coneDirection [1] = -1;
+            coneDirection [2] = 1;
+            break;
+        }
+        case spot_right:
+        {
+            specular_RGBA[0] = 0.7;
+            specular_RGBA[1] = 0.7;
+            specular_RGBA[2] = 0.0;
+            light0_Position [0] = 100;
+            light0_Position [1] = 100;
+            light0_Position [2] = -100;
+            coneDirection [0] = -1;
+            coneDirection [1] = -1;
+            coneDirection [2] = 1;
+            break;
+        }
+    }
+    glLightfv(GL_LIGHT1, GL_POSITION, light1_Position);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, ambient_RGBA);
+    //glDisable(GL_LIGHT1);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, specular_RGBA);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, highShine);
+    glLightfv(GL_LIGHT0, GL_POSITION, light0_Position);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular_RGBA);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, coneDirection);
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, coneAngle);
+
+}
+
 void drawGround()
 {
     glPushMatrix();
@@ -166,7 +271,7 @@ void initializeBuildings()
                       hits =3;
                     }
                     buildings.push_back(new Building(randBuildType,i+0.1, j+0.1, 0.0f, rand() % 2, randomHeight, hits, buildingID));
-                    std::cout << hits << std::endl;
+                    std::cout << buildingID << ": " << hits << std::endl;
                     buildingID +=1;
                 }
             }
@@ -182,7 +287,7 @@ void display(void) {
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+   getLight(light);
   if (robotAngle == 0.0) {
     gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
               at_x + pos_x,at_y,at_z + pos_z,
@@ -393,6 +498,19 @@ void specialKeyboard(int key, int x, int y) {
       at_x = 0.0;
       at_y = 1.0;
       at_z = 0.0;
+      break;
+    //Added Lighting Controls.
+    case GLUT_KEY_UP:
+      light = diffuse;
+      break;
+    case GLUT_KEY_DOWN:
+      light = spot_down;
+      break;
+    case GLUT_KEY_LEFT:
+      light = spot_left;
+      break;
+    case GLUT_KEY_RIGHT:
+      light = spot_right;
       break;
     default:
       break;
