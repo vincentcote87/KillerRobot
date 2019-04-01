@@ -16,6 +16,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #endif
+#define SIZE 2048
 
 int window_width = 800;
 int window_height = 600;
@@ -55,6 +56,9 @@ const int cityMin_x = 0 - (cityW/2);
 const int cityMax_x = (cityW/2);
 const int cityMin_z = 0 - (cityH/2);
 const int cityMax_z = (cityH/2);
+
+GLint hit;
+GLuint save;
 
 std::vector<Building*> buildings;
 Robot *r = new Robot();
@@ -129,10 +133,10 @@ void drawGrass()
 void drawCity()
 {
 
-    for (int i = 0; i < buildings.size(); i++)
-    {
-      buildings[i]->Draw();
-    }
+    // for (int i = 0; i < buildings.size(); i++)
+    // {
+    //   buildings[i]->Draw();
+    // }
 
   drawGround();
   // glPushMatrix();
@@ -166,13 +170,27 @@ void initializeBuildings()
                       hits =3;
                     }
                     buildings.push_back(new Building(randBuildType,i+0.1, j+0.1, 0.0f, rand() % 2, randomHeight, hits, buildingID));
-                    std::cout << hits << std::endl;
+                    // std::cout << hits << std::endl;
                     buildingID +=1;
                 }
             }
 
         }
       }
+}
+
+void drawObjects(GLenum mode) {
+    for (int i = 0; i < buildings.size(); i++)
+    {
+      buildings[i]->Draw();
+      // buildings[i]->Destroy();
+      if (mode == GL_SELECT) {
+        std::cout<<i<<std::endl;
+        glLoadName(i);
+        //buildings[i]->Destroy();
+      }
+
+    }
 }
 
 void display(void) {
@@ -217,8 +235,11 @@ void display(void) {
   glPushMatrix();
   glTranslatef(-2.0, 0.0, -2.0);
   glScalef(4.0, 4.0, 4.0);
+  drawObjects(GL_RENDER);
   drawCity();
   glPopMatrix();
+
+
 
    //Stuff here so that it will actually show the stuff which has been drawn
    glLoadIdentity();
@@ -226,6 +247,8 @@ void display(void) {
 
    glutSwapBuffers();
 }
+
+
 
 void reshape(int w, int h) {
    // Add reshape functions here
@@ -298,7 +321,7 @@ void keyboard(unsigned char key, int x, int y) {
         }
       }
 
-      std::cout<<"x = "<<pos_x<<" z = "<<pos_z<<std::endl;
+      // std::cout<<"x = "<<pos_x<<" z = "<<pos_z<<std::endl;
       break;
     default:
       break;
@@ -412,8 +435,68 @@ void keySpecialUp(int key, int x, int y) {
   }
 }
 
+void processHits (GLint hits, GLuint buffer[])
+{
+   unsigned int i, j;
+   GLuint names, *ptr, minZ,*ptrNames, numberOfNames;
+
+   printf ("hits = %d\n", hits);
+   ptr = (GLuint *) buffer;
+   minZ = 0xffffffff;
+   for (i = 0; i < hits; i++) {	
+      names = *ptr;
+	  ptr++;
+	  if (*ptr < minZ) {
+		  numberOfNames = names;
+		  minZ = *ptr;
+		  ptrNames = ptr+2;
+	  }
+	  
+	  ptr += names+2;
+	}
+  printf ("The closest hit names are:");
+  ptr = ptrNames;
+  for (j = 0; j < numberOfNames; j++,ptr++) {
+     printf ("%d ", *ptr);
+  }
+  printf ("\n");
+}
+
 void mouse(int button, int state, int x, int y) {
-  // Add mouse functions here
+
+   GLuint selectBuf[SIZE];
+   GLint hits;
+   GLint viewport[4];
+
+   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+   {
+      glGetIntegerv(GL_VIEWPORT, viewport);
+
+      glSelectBuffer(SIZE, selectBuf);
+      glRenderMode(GL_SELECT);
+
+      glInitNames();
+      glPushName(0);
+   
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity();
+
+      gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 0.5, 0.5, viewport);
+      gluOrtho2D(-0.5, 0.5, -0.5, 0.5);
+      drawObjects(GL_SELECT);
+
+
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+      glFlush();
+
+      hits = glRenderMode(GL_RENDER);
+      // std::cout<<hits<<std::endl;
+      // processHits(hits, selectBuf);
+
+      glutPostRedisplay();
+   }
 }
 
 int main(int argc, char** argv) {
