@@ -180,15 +180,29 @@ void initializeBuildings()
 }
 
 void drawObjects(GLenum mode) {
+  int id;
+  // std::cout<<save<<std::endl;
+    // if (mode == GL_SELECT) {
+    //   buildings[save]->Destroy();
+    // }
+      // std::cout<<i<<std::endl;
+        // glLoadName(i);
+        // if (i == save) {
+      //     buildings[save]->Destroy();
+      //   }
+      //     // id = buildings[i]->getId()
+      //     std::cout<<buildings[i]->getId()<<std::endl;
+      //     // buildings[i]->Destroy();
+      // }
     for (int i = 0; i < buildings.size(); i++)
     {
       buildings[i]->Draw();
       // buildings[i]->Destroy();
-      if (mode == GL_SELECT) {
-        std::cout<<i<<std::endl;
-        glLoadName(i);
-        //buildings[i]->Destroy();
-      }
+    if (mode == GL_SELECT) {
+      glLoadName(i);
+      // if ( i % 2 == 0)
+      //   buildings[i]->Destroy();
+    }
 
     }
 }
@@ -235,8 +249,8 @@ void display(void) {
   glPushMatrix();
   glTranslatef(-2.0, 0.0, -2.0);
   glScalef(4.0, 4.0, 4.0);
-  drawObjects(GL_RENDER);
   drawCity();
+  drawObjects(GL_RENDER);
   glPopMatrix();
 
 
@@ -443,7 +457,8 @@ void processHits (GLint hits, GLuint buffer[])
    printf ("hits = %d\n", hits);
    ptr = (GLuint *) buffer;
    minZ = 0xffffffff;
-   for (i = 0; i < hits; i++) {	
+   for (i = 0; i < hits; i++) {
+    //  std::cout<<i<<std::endl;
       names = *ptr;
 	  ptr++;
 	  if (*ptr < minZ) {
@@ -454,11 +469,18 @@ void processHits (GLint hits, GLuint buffer[])
 	  
 	  ptr += names+2;
 	}
-  printf ("The closest hit names are:");
-  ptr = ptrNames;
-  for (j = 0; j < numberOfNames; j++,ptr++) {
-     printf ("%d ", *ptr);
+  // std::cout<<names<<std::endl;
+  // std::cout<<numberOfNames<<std::endl;
+  // printf ("The closest hit names are:");
+  if (hits != 0) {
+    ptr = ptrNames;
+    for (j = 0; j < numberOfNames; j++,ptr++) {
+       printf ("%d ", *ptr);
+      save = *ptr;
+      std::cout<<"save "<<save<<std::endl;
+    }
   }
+
   printf ("\n");
 }
 
@@ -477,13 +499,13 @@ void mouse(int button, int state, int x, int y) {
 
       glInitNames();
       glPushName(0);
-   
+
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
       glLoadIdentity();
 
-      gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 0.5, 0.5, viewport);
-      gluOrtho2D(-0.5, 0.5, -0.5, 0.5);
+      gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 2.0, 2.0, viewport);
+      gluOrtho2D(-12, 12, -9, 9);
       drawObjects(GL_SELECT);
 
 
@@ -493,7 +515,7 @@ void mouse(int button, int state, int x, int y) {
 
       hits = glRenderMode(GL_RENDER);
       // std::cout<<hits<<std::endl;
-      // processHits(hits, selectBuf);
+      processHits(hits, selectBuf);
 
       glutPostRedisplay();
    }

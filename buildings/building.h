@@ -27,6 +27,8 @@ class Building  {
 
     void Destroy();
 
+    int getId();
+
 };
 
 #endif

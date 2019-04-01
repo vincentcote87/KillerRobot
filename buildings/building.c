@@ -3,6 +3,7 @@
 //This file is a function definition file for the Building class.
 
 #include <stdlib.h>
+#include <iostream>
 #include "building.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -166,10 +167,15 @@ param[\out]: none
 */
 void Building::Destroy()
 {
+  std::cout<<"In destroy with id: "<<buildingID<<std::endl;
   if(hitCount == 0){
     base -= 100+height;
     hitCount--; //Simply redraw the building in the opposite direction. Essentially hiding the building.
   }else{
     hitCount--;
   }
+}
+
+int Building::getId() {
+  return buildingID;
 }
