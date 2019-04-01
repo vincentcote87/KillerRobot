@@ -11,9 +11,12 @@ class Building  {
         base,
         width,
         height;
-  int hitCount;
-
-  char shape;
+  //int hitCount;
+  int random;
+  int color;
+  
+  
+  bool shape;
 
   public:
     int buildingID;
@@ -24,8 +27,11 @@ class Building  {
 
     //Draw Function which houses the "schematics" for each building
     void Draw();
-
+    int hitCount;
     void Destroy();
+
+    int GetColor();
+
 
 };
 
