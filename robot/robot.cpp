@@ -104,7 +104,7 @@ void Robot::Draw()
    glPushMatrix();
 
    glRotatef(headRot, 0.0f, 1.0f, 0.0f);
-   
+
    glPushMatrix();
    glBegin(GL_QUADS); 
 
@@ -185,7 +185,7 @@ void Robot::Draw()
 
    glPushMatrix();
 
-   glRotatef(Y_Rot, 0.0f, 1.0f, 0.0f);
+   glRotatef(-Y_Rot, 0.0f, 1.0f, 0.0f);
    glColor4f(1.0,1.0,1.0,1);
    GLUquadricObj *d = gluNewQuadric();
    glTranslatef(0.0f, 6.5f, 0.3f);

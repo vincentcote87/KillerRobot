@@ -373,7 +373,7 @@ void processHits (GLint hits, GLuint selectBuffer[])
 void mouse(int button, int state, int x, int y)
 {
    GLuint selectBuf[SIZE];
-   GLint viewport[4];
+   GLint viewport[3];
    
 
    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) 
