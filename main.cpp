@@ -1,9 +1,13 @@
+/*********************************************************************
+/ CPSC 3710 - Final Project                                          *
+/ By Darsh Thankj, Taranjot Kaur, Zach Nelson, and Vincent Cote      *
+**********************************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 #include <iostream>
 #include <ctime>
-//#include <random>
 #include "./robot/robot.h"
 #include "./buildings/building.h" //Include the building class
 
@@ -18,6 +22,7 @@
 #include <GL/glut.h>
 #endif
 
+// Window related variables
 int window_width = 800;
 int window_height = 600;
 int window_position_x = 100;
@@ -25,8 +30,7 @@ int window_position_y = 100;
 
 const float boundry = 170.0;
 
-int Y_Rot = 0;
-
+// View variables
 float eye_x = 0.0;
 float eye_y = 2.5;
 float eye_z = -6.0;
@@ -34,6 +38,7 @@ float at_x = 0.0;
 float at_y = 2.0;
 float at_z = 0.0;
 
+// Robot position variables
 float pos_x = 0.0;
 float pos_z = 0.0;
 float robotAngle = 0.0;
@@ -44,7 +49,7 @@ bool isPaused = false;
 //define city specifications
 int blockDim = 4; //define block dimensions (square)
 float streetWidth = 0.5; //define street width
-int rowBlocks = 20; //Need to modify these to val 20.
+int rowBlocks = 20;
 int colBlocks = 20;
 
 int RenderMode = GL_RENDER;
@@ -59,9 +64,11 @@ const int cityMax_x = (cityW/2);
 const int cityMin_z = 0 - (cityH/2);
 const int cityMax_z = (cityH/2);
 
+// Robot object
 std::vector<Building*> buildings;
 Robot *r = new Robot();
 
+// Sets the look at function based on the robot's position
 void getLookAt(){
    if (robotAngle == 0.0) {
     gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
@@ -85,6 +92,7 @@ void getLookAt(){
   }
 }
 
+// Sets up the main viewport
 void mainViewPort(){
    glViewport(0, 0, window_width, window_height);
    glMatrixMode(GL_PROJECTION);
@@ -94,6 +102,7 @@ void mainViewPort(){
    getLookAt();
 }
 
+// Draws the base layer of the city
 void drawGround()
 {
     glPushMatrix();
@@ -109,6 +118,7 @@ void drawGround()
 
 }
 
+// Draws the lanes on the roads
 void drawDottedLines(float start_x, float start_z, float end_x, float end_z)
 {
 
@@ -126,6 +136,7 @@ void drawDottedLines(float start_x, float start_z, float end_x, float end_z)
 
 }
 
+// Adds the drawn lines to the streets
 void drawRoadLines()
 {
     for (GLint i = cityMin_x; i < cityMax_x+1; i++)
@@ -140,6 +151,7 @@ void drawRoadLines()
     }
 }
 
+// Draws the green area under the blocks
 void drawGrass()
 {
     glPushMatrix();
@@ -161,6 +173,7 @@ void drawGrass()
     glPopMatrix();
 }
 
+// Adds the roads, building, and grass together
 void drawCity()
 {
    if(RenderMode == GL_SELECT)
@@ -171,22 +184,18 @@ void drawCity()
 
     for (int i = 0; i < buildings.size(); i++)
     {
-       if(RenderMode == GL_SELECT)
-	  glLoadName(buildings[i]->buildingID);
-
-       buildings[i]->Draw();
+      if(RenderMode == GL_SELECT)
+	      glLoadName(buildings[i]->buildingID);
+      buildings[i]->Draw();
     }
     if(RenderMode == GL_RENDER){
-
-
        drawGround();
        drawRoadLines();
        drawGrass();
-
     }
-
 }
 
+// randomly creates the buildings and stores them into a vector
 void initializeBuildings()
 {
     int buildingID = 0;
@@ -209,7 +218,6 @@ void initializeBuildings()
                       hits =3;
                     }
                     buildings.push_back(new Building(randBuildType,i+0.1, j+0.1, 0.0f, rand() % 2, randomHeight, hits, buildingID));
-		    std::cout << "buildingID: " << buildingID << std::endl;
                     buildingID +=1;
                 }
             }
@@ -218,33 +226,30 @@ void initializeBuildings()
       }
 }
 
+// Main function to display
 void display(void) {
-   // Add display functions here
 
-   //Initialization
+   // Initialization
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
    mainViewPort();
-   //
 
+  // Drawing robot here
    glPushMatrix();
-
    glTranslatef(pos_x, 0.0, pos_z);
    glRotatef(robotAngle, 0.0, 1.0, 0.0);
    glScalef(0.25, 0.25, 0.25);
-
-   //Drawing robo here
    r->Draw();
    glPopMatrix();
 
+  // Drawing the city
   glPushMatrix();
   glTranslatef(-2.0, 0.0, -2.0);
   glScalef(4.0, 4.0, 4.0);
   drawCity();
   glPopMatrix();
 
-   //Stuff here so that it will actually show the stuff which has been drawn
    glLoadIdentity();
    glMatrixMode(GL_PROJECTION);
 
@@ -252,55 +257,40 @@ void display(void) {
 }
 
 void reshape(int w, int h) {
-   // Add reshape functions here
-
-   // Let's not core dump, no matter what.
-
    if (h == 0)
       h = 1;
-
-   //glViewport(0, 0, w, h);
-
-   //glMatrixMode(GL_PROJECTION);
-   //glLoadIdentity();
-
-   //gluOrtho2D (-2.0, 2.0, -2.0, 2.0);
-   //gluPerspective(60.0f,(GLfloat)w/(GLfloat)h, 1.0f, 100.0f);
-
-   //glMatrixMode(GL_MODELVIEW);
-
    window_width  = w;
    window_height = h;
-
    mainViewPort();
-
 }
 
+// Init function
 void init(void) {
-  // Add init functions here
   glClearColor (0.10, 0.0, 0.40, 0.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_STENCIL_TEST);
   initializeBuildings();
 }
 
+// Keyboard functions
 void keyboard(unsigned char key, int x, int y) {
-  // Add regular keyboard functions here
    if (!isPaused) {
     switch (key) {
+    // at an intersection of the streets, turn the robot to right. If the robot is not at any intersection, nothing happens.
     case 97: // a
-      // r->Turn(3);
       if (static_cast<int>(pos_x) % 16 == 0.0 && static_cast<int>(pos_z) % 16 == 0) {
         robotAngle += 90.0;
         if (robotAngle >= 360.0)
           robotAngle = 0.0;
       }
       break;
+    // pause the game. Pressing p again continues the game
     case 112: // p
       glutDisplayFunc(display);
       glutIdleFunc(NULL);
       isPaused = true;
       break;
+        // at an intersection of the streets, turn the robot to left. If the robot is not at any intersection, nothing happens.
     case 113: // q
       if (static_cast<int>(pos_x) % 16 == 0.0 && static_cast<int>(pos_z) % 16 == 0) {
         robotAngle -= 90.0;
@@ -308,16 +298,17 @@ void keyboard(unsigned char key, int x, int y) {
           robotAngle = 270.0;
       }
       break;
+    // returns the robot to the origin if it is on the boundary of the exploration area you created
     case 114: // r
-    if(pos_x >= 170 || pos_z >= 170 || pos_x <= -170 || pos_z <= -170)
-    {
-      pos_x = 0.0;
-      pos_z = 0.0;
-      robotAngle = 0.0;
+      if(pos_x >= 170 || pos_z >= 170 || pos_x <= -170 || pos_z <= -170)
+      {
+        pos_x = 0.0;
+        pos_z = 0.0;
+        robotAngle = 0.0;
       }
       break;
+    // push the robot forward
     case 122: //z
-      // r->MoveForward();
       if (pos_x < boundry && pos_x > -boundry && pos_z < boundry && pos_z > -boundry) {
         if (robotAngle == 270.0) {
           pos_x -= moveDistance;
@@ -329,20 +320,18 @@ void keyboard(unsigned char key, int x, int y) {
           pos_z -= moveDistance;
         }
       }
-
-      std::cout<<"x = "<<pos_x<<" z = "<<pos_z<<std::endl;
       break;
     default:
       break;
     }
-  } else if (key == 112) {
+  } else if (key == 112) { // only called when the game is paused
       glutIdleFunc(display);
       isPaused = false;
   }
 
 }
 
-////////////////////////////////////////
+// Processes the hits from the selection buffer and applies them to the buildings
 void processHits (GLint hits, GLuint selectBuffer[])
 {
    unsigned int i, j;
@@ -350,12 +339,10 @@ void processHits (GLint hits, GLuint selectBuffer[])
    ptr = selectBuffer;
    minZ = 0xffffffff;
    for(i = 0; i < hits; i++){
-
       names = *ptr;
       ptr++;
       if(*ptr < minZ)
       {
-	 std::cout << names << std::endl;
 	 numberOfNames = names;
 	 minZ = *ptr;
 	 ptrNames = ptr+2;
@@ -365,22 +352,19 @@ void processHits (GLint hits, GLuint selectBuffer[])
    ptr = ptrNames;
    for(j = 0; j < numberOfNames; j++, ptr++)
    {
-      std::cout << buildings[*ptr]->buildingID << "at ptr hitcount: " << buildings[*ptr]->hitCount << std::endl;
 	 buildings[*ptr]->Destroy();
    }
 
 }
-///////////////////////////////////////
 
 #define SIZE 512
-
+// Mouse functions for destroying a building
 void mouse(int button, int state, int x, int y)
 {
    GLuint selectBuf[SIZE];
    GLint viewport[4];
 
-   if(!isPaused){
-
+   if(!isPaused){ // Only works when the game is not paused
      if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
      {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -395,8 +379,7 @@ void mouse(int button, int state, int x, int y)
         glLoadIdentity();
 
         glGetIntegerv(GL_VIEWPORT, viewport);
-        gluPickMatrix ((GLdouble) x, (GLdouble) (viewport[3] - y),
-                  	1.0, 1.0, viewport);
+        gluPickMatrix ((GLdouble) x, (GLdouble) (viewport[3] - y), 1.0, 1.0, viewport);
         gluPerspective(60.0f,(GLfloat)window_width/(GLfloat)window_height, 1.0f, 100.0f);
 
         glMatrixMode(GL_MODELVIEW);
@@ -405,12 +388,9 @@ void mouse(int button, int state, int x, int y)
         getLookAt();
 
         glPushMatrix();
-
         glTranslatef(pos_x, 0.0, pos_z);
         glRotatef(robotAngle, 0.0, 1.0, 0.0);
         glScalef(0.25, 0.25, 0.25);
-
-        //Drawing robo here
         r->Draw();
         glPopMatrix();
 
@@ -419,14 +399,12 @@ void mouse(int button, int state, int x, int y)
         drawCity();
 
        glMatrixMode(GL_PROJECTION);
-       //glutSwapBuffers();
-
 
         int hits = glRenderMode(GL_RENDER);
         RenderMode = GL_RENDER;
         if(hits != 0)
         {
-  	 processHits(hits, selectBuf);
+  	      processHits(hits, selectBuf);
         }
 
      }
@@ -435,11 +413,8 @@ void mouse(int button, int state, int x, int y)
    std::cout << "Game is paused..." << std::endl;
 }
 
-
-//////////////////////////////////////
-
+// Special keyboard functions
 void specialKeyboard(int key, int x, int y) {
-  // Add special keyboard functions here
   switch (key) {
     case GLUT_KEY_F1:
       r->TurnHead("Frw");
@@ -450,6 +425,8 @@ void specialKeyboard(int key, int x, int y) {
     case GLUT_KEY_F3:
       r->TurnHead("Left");
       break;
+
+    // The following function keys changes different angles for the camera
     case GLUT_KEY_F4:
       eye_x = 0.0;
       eye_y = 2.5;
@@ -527,6 +504,7 @@ void specialKeyboard(int key, int x, int y) {
   }
 }
 
+// When the function key is released the robot's head turns back to face front
 void keySpecialUp(int key, int x, int y) {
   switch (key) {
     case GLUT_KEY_F1:
@@ -540,10 +518,7 @@ void keySpecialUp(int key, int x, int y) {
   }
 }
 
-//void mouse(int button, int state, int x, int y) {
-  // Add mouse functions here
-//}
-
+// Main function of the program
 int main(int argc, char** argv) {
 
   srand(time(0));
