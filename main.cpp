@@ -309,9 +309,11 @@ void keyboard(unsigned char key, int x, int y) {
       }
       break;
     case 114: // r
-      pos_x = 0.0;
-      pos_z = 0.0;
-      robotAngle = 0.0;
+      if (pos_x >= 170 || pos_z >= 170 || pos_x <= -170 || pos_z <= -170) {
+        pos_x = 0.0;
+        pos_z = 0.0;
+        robotAngle = 0.0;
+      }
       break;
     case 122: //z
       // r->MoveForward();
@@ -374,13 +376,7 @@ void processHits (GLint hits, GLuint selectBuffer[])
 void mouse(int button, int state, int x, int y)
 {
    GLuint selectBuf[SIZE];
-<<<<<<< HEAD
    GLint viewport[4];
-=======
-   GLint viewport[3];
-   
->>>>>>> 49a6428415fabd2d79926c29314f23667bd83993
-
 
    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
    {
@@ -396,13 +392,25 @@ void mouse(int button, int state, int x, int y)
       glLoadIdentity();
 
       glGetIntegerv(GL_VIEWPORT, viewport);
-      gluPickMatrix(x, y, 1.0, 1.0, viewport);
+      // gluPickMatrix(x, y, 1.0, 1.0, viewport);
+      gluPickMatrix ((GLdouble) x, (GLdouble) (viewport[3] - y),
+                  	1.0, 1.0, viewport);
       gluPerspective(60.0f,(GLfloat)window_width/(GLfloat)window_height, 1.0f, 100.0f);
 
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
       glLoadIdentity();
       getLookAt();
+
+      glPushMatrix();
+
+      glTranslatef(pos_x, 0.0, pos_z);
+      glRotatef(robotAngle, 0.0, 1.0, 0.0);
+      glScalef(0.25, 0.25, 0.25);
+
+   //Drawing robo here
+   r->Draw();
+   glPopMatrix();
 
       glTranslatef(-2.0, 0.0, -2.0);
       glScalef(4.0, 4.0, 4.0);
