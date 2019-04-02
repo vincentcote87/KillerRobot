@@ -37,13 +37,13 @@ void Robot::Draw()
    ////////////////////////////////////////////
    // Drawing the body of the robot
    ///////////////////////////////////////////
-   
+
    glPushMatrix();
-   glBegin(GL_QUADS); 
+   glBegin(GL_QUADS);
 
    // Far face
    glNormal3f( 0.0f, 0.0f,-1.0f);
-   glColor4f(0.42f,0.42f,0.42f,1.0); 
+   glColor4f(0.42f,0.42f,0.42f,1.0);
 
    glTexCoord2f(0.995f, 0.005f); glVertex3f(-1.5f, 0.0f, -1.5f);
    glTexCoord2f(2.995f, 2.995f); glVertex3f(-1.5f,  3.0f, -1.5f);
@@ -54,7 +54,7 @@ void Robot::Draw()
    glNormal3f( 1.0f, 0.0f, 0.0f);
    glColor4f(0.35f,0.35f,0.35f,1.0);
 
-   glTexCoord2f(0.995f, 0.005f); glVertex3f( 1.5f, 0.0f, -1.5f); 
+   glTexCoord2f(0.995f, 0.005f); glVertex3f( 1.5f, 0.0f, -1.5f);
    glTexCoord2f(0.995f, 0.995f); glVertex3f( 1.5f,  3.0f, -1.5f);
    glTexCoord2f(0.005f, 0.995f); glVertex3f( 1.5f,  3.0f,  1.5f);
    glTexCoord2f(0.005f, 0.005f); glVertex3f( 1.5f, 0.0f,  1.5f);
@@ -62,17 +62,17 @@ void Robot::Draw()
    // Front face
    glNormal3f( 0.0f, 0.0f, 1.0f);
    glColor4f( 0.42f, 0.42f, 0.42f, 1.0);
-   
+
    glTexCoord2f( 0.005f, 0.005f); glVertex3f(-1.5f, 0.0f,  1.5f);
    glTexCoord2f( 0.995f, 0.005f); glVertex3f( 1.5f, 0.0f,  1.5f);
-   glTexCoord2f( 0.995f, 0.995f); glVertex3f( 1.5f,  3.0f,  1.5f); 
+   glTexCoord2f( 0.995f, 0.995f); glVertex3f( 1.5f,  3.0f,  1.5f);
    glTexCoord2f( 0.005f, 0.995f); glVertex3f(-1.5f,  3.0f,  1.5f);
 
    // Left Face
-   glNormal3f(-1.0f, 0.0f, 0.0f);  
+   glNormal3f(-1.0f, 0.0f, 0.0f);
    glColor4f(0.35,0.35,0.35,1.0);
-   
-   glTexCoord2f(0.005f, 0.005f); glVertex3f(-1.5f, 0.0f, -1.5f); 
+
+   glTexCoord2f(0.005f, 0.005f); glVertex3f(-1.5f, 0.0f, -1.5f);
    glTexCoord2f(0.995f, 0.005f); glVertex3f(-1.5f, 0.0f,  1.5f);
    glTexCoord2f(0.995f, 0.995f); glVertex3f(-1.5f,  3.0f,  1.5f);
    glTexCoord2f(0.005f, 0.995f); glVertex3f(-1.5f,  3.0f, -1.5f);
@@ -104,13 +104,13 @@ void Robot::Draw()
    glPushMatrix();
 
    glRotatef(headRot, 0.0f, 1.0f, 0.0f);
-   
+
    glPushMatrix();
-   glBegin(GL_QUADS); 
+   glBegin(GL_QUADS);
 
    //Front face
    glNormal3f( 0.0f, 0.0f,-1.0f);
-   glColor4f(0.42f,0.42f,0.42f,1.0); 
+   glColor4f(0.42f,0.42f,0.42f,1.0);
 
    glTexCoord2f(0.995f, 0.005f); glVertex3f(-1.0f, 3.5f, -1.0f);
    glTexCoord2f(2.995f, 2.995f); glVertex3f(-1.0f,  5.5f, -1.0f);
@@ -121,7 +121,7 @@ void Robot::Draw()
    glNormal3f( 1.0f, 0.0f, 0.0f);
    glColor4f(0.35f,0.35f,0.35f,1.0);
 
-   glTexCoord2f(0.995f, 0.005f); glVertex3f( 1.0f, 3.5f, -1.0f); 
+   glTexCoord2f(0.995f, 0.005f); glVertex3f( 1.0f, 3.5f, -1.0f);
    glTexCoord2f(0.995f, 0.995f); glVertex3f( 1.0f,  5.5f, -1.0f);
    glTexCoord2f(0.005f, 0.995f); glVertex3f( 1.0f,  5.5f,  1.0f);
    glTexCoord2f(0.005f, 0.005f); glVertex3f( 1.0f, 3.5f,  1.0f);
@@ -129,17 +129,17 @@ void Robot::Draw()
    //Far face
    glNormal3f( 0.0f, 0.0f, 1.0f);
    glColor4f( 0.42f, 0.42f, 0.42f, 1.0);
-   
+
    glTexCoord2f( 0.005f, 0.005f); glVertex3f(-1.0f, 3.5f,  1.0f);
    glTexCoord2f( 0.995f, 0.005f); glVertex3f( 1.0f, 3.5f,  1.0f);
-   glTexCoord2f( 0.995f, 0.995f); glVertex3f( 1.0f,  5.5f,  1.0f); 
+   glTexCoord2f( 0.995f, 0.995f); glVertex3f( 1.0f,  5.5f,  1.0f);
    glTexCoord2f( 0.005f, 0.995f); glVertex3f(-1.0f,  5.5f,  1.0f);
 
    // Left Face
-   glNormal3f(-1.0f, 0.0f, 0.0f);  
+   glNormal3f(-1.0f, 0.0f, 0.0f);
    glColor4f(0.35,0.35,0.35,1.0);
-   
-   glTexCoord2f(0.005f, 0.005f); glVertex3f(-1.0f, 3.5f, -1.0f); 
+
+   glTexCoord2f(0.005f, 0.005f); glVertex3f(-1.0f, 3.5f, -1.0f);
    glTexCoord2f(0.995f, 0.005f); glVertex3f(-1.0f, 3.5f,  1.0f);
    glTexCoord2f(0.995f, 0.995f); glVertex3f(-1.0f,  5.5f,  1.0f);
    glTexCoord2f(0.005f, 0.995f); glVertex3f(-1.0f,  5.5f, -1.0f);
@@ -178,14 +178,14 @@ void Robot::Draw()
    gluCylinder(p, 0.7, 0.7, 0.5, 30, 30);
 
    glPopMatrix();
-   
+
    ////////////////////////////////////////////////////
    //Drawing Antenna
    ////////////////////////////////////////////////////
 
    glPushMatrix();
 
-   glRotatef(Y_Rot, 0.0f, 1.0f, 0.0f);
+   glRotatef(-Y_Rot, 0.0f, 1.0f, 0.0f);
    glColor4f(1.0,1.0,1.0,1);
    GLUquadricObj *d = gluNewQuadric();
    glTranslatef(0.0f, 6.5f, 0.3f);
@@ -207,7 +207,7 @@ void Robot::Draw()
    glPopMatrix();
 
    glPushMatrix();
-   
+
    glTranslatef(-0.5f, 4.7f, 1.0f);
    glutSolidSphere(0.4f, 50, 50);
 
@@ -224,11 +224,11 @@ void Robot::Draw()
    glBegin(GL_QUADS);
 
    glNormal3f( 0.0f, 0.0f,-1.0f);
-   glColor4f(0.1f,1.0f,0.0f,1.0); 
+   glColor4f(0.1f,1.0f,0.0f,1.0);
 
    glTexCoord2f( 0.005f, 0.005f); glVertex3f(-1.0f, 0.3f,  1.55f);
    glTexCoord2f( 0.995f, 0.005f); glVertex3f( 1.0f, 0.3f,  1.55f);
-   glTexCoord2f( 0.995f, 0.995f); glVertex3f( 1.0f,  2.7f,  1.55f); 
+   glTexCoord2f( 0.995f, 0.995f); glVertex3f( 1.0f,  2.7f,  1.55f);
    glTexCoord2f( 0.005f, 0.995f); glVertex3f(-1.0f,  2.7f,  1.55f);
 
    glEnd();
