@@ -159,10 +159,6 @@ void Building::Draw()
   }
 }
 
-int Building::GetColor(){
-   return color;
-}
-
 /*
 Destroy(): Destroy the building if click count has been met. This function pushes
            the building underneath the base to hide it.

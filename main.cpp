@@ -309,9 +309,12 @@ void keyboard(unsigned char key, int x, int y) {
       }
       break;
     case 114: // r
+    if(pos_x >= 170 || pos_z >= 170 || pos_x <= -170 || pos_z <= -170)
+    {
       pos_x = 0.0;
       pos_z = 0.0;
       robotAngle = 0.0;
+      }
       break;
     case 122: //z
       // r->MoveForward();
