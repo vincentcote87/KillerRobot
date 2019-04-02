@@ -309,10 +309,11 @@ void keyboard(unsigned char key, int x, int y) {
       }
       break;
     case 114: // r
-      if (pos_x >= 170 || pos_z >= 170 || pos_x <= -170 || pos_z <= -170) {
-        pos_x = 0.0;
-        pos_z = 0.0;
-        robotAngle = 0.0;
+    if(pos_x >= 170 || pos_z >= 170 || pos_x <= -170 || pos_z <= -170)
+    {
+      pos_x = 0.0;
+      pos_z = 0.0;
+      robotAngle = 0.0;
       }
       break;
     case 122: //z
@@ -378,56 +379,60 @@ void mouse(int button, int state, int x, int y)
    GLuint selectBuf[SIZE];
    GLint viewport[4];
 
-   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-   {
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      mainViewPort();
+   if(!isPaused){
 
-      glSelectBuffer(SIZE, selectBuf);
-      RenderMode = GL_SELECT;
-      glRenderMode( GL_SELECT );
+     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+     {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        mainViewPort();
 
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-      glLoadIdentity();
+        glSelectBuffer(SIZE, selectBuf);
+        RenderMode = GL_SELECT;
+        glRenderMode( GL_SELECT );
 
-      glGetIntegerv(GL_VIEWPORT, viewport);
-      // gluPickMatrix(x, y, 1.0, 1.0, viewport);
-      gluPickMatrix ((GLdouble) x, (GLdouble) (viewport[3] - y),
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        gluPickMatrix ((GLdouble) x, (GLdouble) (viewport[3] - y),
                   	1.0, 1.0, viewport);
-      gluPerspective(60.0f,(GLfloat)window_width/(GLfloat)window_height, 1.0f, 100.0f);
+        gluPerspective(60.0f,(GLfloat)window_width/(GLfloat)window_height, 1.0f, 100.0f);
 
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
-      getLookAt();
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        getLookAt();
 
-      glPushMatrix();
+        glPushMatrix();
 
-      glTranslatef(pos_x, 0.0, pos_z);
-      glRotatef(robotAngle, 0.0, 1.0, 0.0);
-      glScalef(0.25, 0.25, 0.25);
+        glTranslatef(pos_x, 0.0, pos_z);
+        glRotatef(robotAngle, 0.0, 1.0, 0.0);
+        glScalef(0.25, 0.25, 0.25);
 
-   //Drawing robo here
-   r->Draw();
-   glPopMatrix();
+        //Drawing robo here
+        r->Draw();
+        glPopMatrix();
 
-      glTranslatef(-2.0, 0.0, -2.0);
-      glScalef(4.0, 4.0, 4.0);
-      drawCity();
+        glTranslatef(-2.0, 0.0, -2.0);
+        glScalef(4.0, 4.0, 4.0);
+        drawCity();
 
-     glMatrixMode(GL_PROJECTION);
-     //glutSwapBuffers();
+       glMatrixMode(GL_PROJECTION);
+       //glutSwapBuffers();
 
 
-      int hits = glRenderMode(GL_RENDER);
-      RenderMode = GL_RENDER;
-      if(hits != 0)
-      {
-	 processHits(hits, selectBuf);
-      }
+        int hits = glRenderMode(GL_RENDER);
+        RenderMode = GL_RENDER;
+        if(hits != 0)
+        {
+  	 processHits(hits, selectBuf);
+        }
 
-   }
+     }
+
+   } else
+   std::cout << "Game is paused..." << std::endl;
 }
 
 
