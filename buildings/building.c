@@ -171,7 +171,7 @@ param[\out]: none
 */
 void Building::Destroy()
 {
-   if(hitCount <= 0){
+   if(hitCount == 0){
      base -= 10000;
     //hitCount--; //Simply redraw the building in the opposite direction. Essentially hiding the building.
   }else{
