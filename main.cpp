@@ -62,14 +62,38 @@ const int cityMax_z = (cityH/2);
 std::vector<Building*> buildings;
 Robot *r = new Robot();
 
+void getLookAt(){
+   if (robotAngle == 0.0) {
+    gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
+              at_x + pos_x,at_y,at_z + pos_z,
+              0.0,1.0,0.0);
+  }
+  else if(robotAngle == 90.0) {
+    gluLookAt((eye_z + pos_x),eye_y,eye_x + pos_z,
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+  else if(robotAngle == 180.0) {
+    gluLookAt(eye_x + pos_x,eye_y,(-eye_z + pos_z),
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+  else {
+    gluLookAt((-eye_z + pos_x),eye_y,(eye_x + pos_z),
+              at_x + pos_x,at_y,at_z + pos_z,
+               0.0,1.0,0.0);
+  }
+}
+
 void mainViewPort(){
-   glViewport(window_width * 0.2, 0, window_width*0.8, window_height);
+   glViewport(0, 0, window_width, window_height);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    gluPerspective(60.0f,(GLfloat)window_width/(GLfloat)window_height, 1.0f, 100.0f);
    glMatrixMode(GL_MODELVIEW);
+   getLookAt();
 }
-   
+
 void drawGround()
 {
     glPushMatrix();
@@ -144,7 +168,7 @@ void drawCity()
    glInitNames();
    glPushName(-1);
    }
-   
+
     for (int i = 0; i < buildings.size(); i++)
     {
        if(RenderMode == GL_SELECT)
@@ -153,14 +177,14 @@ void drawCity()
        buildings[i]->Draw();
     }
     if(RenderMode == GL_RENDER){
-   
+
 
        drawGround();
        drawRoadLines();
        drawGrass();
 
     }
-  
+
 }
 
 void initializeBuildings()
@@ -194,29 +218,6 @@ void initializeBuildings()
       }
 }
 
-void getLookAt(){
-   if (robotAngle == 0.0) {
-    gluLookAt((eye_x + pos_x),eye_y,eye_z + pos_z,
-              at_x + pos_x,at_y,at_z + pos_z,
-              0.0,1.0,0.0);
-  }
-  else if(robotAngle == 90.0) {
-    gluLookAt((eye_z + pos_x),eye_y,eye_x + pos_z,
-              at_x + pos_x,at_y,at_z + pos_z,
-               0.0,1.0,0.0);
-  }
-  else if(robotAngle == 180.0) {
-    gluLookAt(eye_x + pos_x,eye_y,(-eye_z + pos_z),
-              at_x + pos_x,at_y,at_z + pos_z,
-               0.0,1.0,0.0);
-  }
-  else {
-    gluLookAt((-eye_z + pos_x),eye_y,(eye_x + pos_z),
-              at_x + pos_x,at_y,at_z + pos_z,
-               0.0,1.0,0.0);
-  }
-}
-
 void display(void) {
    // Add display functions here
 
@@ -224,8 +225,8 @@ void display(void) {
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-   mainViewPort();   
-   getLookAt();
+   mainViewPort();
+   //
 
    glPushMatrix();
 
@@ -253,8 +254,8 @@ void display(void) {
 void reshape(int w, int h) {
    // Add reshape functions here
 
-   // Let's not core dump, no matter what.   	
-   
+   // Let's not core dump, no matter what.
+
    if (h == 0)
       h = 1;
 
@@ -272,7 +273,7 @@ void reshape(int w, int h) {
    window_height = h;
 
    mainViewPort();
-   
+
 }
 
 void init(void) {
@@ -361,7 +362,7 @@ void processHits (GLint hits, GLuint selectBuffer[])
    ptr = ptrNames;
    for(j = 0; j < numberOfNames; j++, ptr++)
    {
-      std::cout << "buildings at ptr hitcount: " << buildings[*ptr]->hitCount << std::endl;
+      std::cout << buildings[*ptr]->buildingID << "at ptr hitcount: " << buildings[*ptr]->hitCount << std::endl;
 	 buildings[*ptr]->Destroy();
    }
 
@@ -374,13 +375,13 @@ void mouse(int button, int state, int x, int y)
 {
    GLuint selectBuf[SIZE];
    GLint viewport[4];
-   
 
-   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) 
+
+   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
    {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       mainViewPort();
-      
+
       glSelectBuffer(SIZE, selectBuf);
       RenderMode = GL_SELECT;
       glRenderMode( GL_SELECT );
@@ -390,18 +391,21 @@ void mouse(int button, int state, int x, int y)
       glLoadIdentity();
 
       glGetIntegerv(GL_VIEWPORT, viewport);
-      gluPickMatrix(x, viewport[3]-y, 5.0, 5.0, viewport);
+      gluPickMatrix(x, y, 1.0, 1.0, viewport);
       gluPerspective(60.0f,(GLfloat)window_width/(GLfloat)window_height, 1.0f, 100.0f);
 
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
       glLoadIdentity();
       getLookAt();
+
+      glTranslatef(-2.0, 0.0, -2.0);
+      glScalef(4.0, 4.0, 4.0);
       drawCity();
 
      glMatrixMode(GL_PROJECTION);
-     glutSwapBuffers();
-     
+     //glutSwapBuffers();
+
 
       int hits = glRenderMode(GL_RENDER);
       RenderMode = GL_RENDER;
@@ -409,10 +413,10 @@ void mouse(int button, int state, int x, int y)
       {
 	 processHits(hits, selectBuf);
       }
-      
+
    }
 }
- 
+
 
 //////////////////////////////////////
 
