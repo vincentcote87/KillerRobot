@@ -260,52 +260,6 @@ void Robot::Draw()
 
 }
 
-
-void Robot::MoveForward(){
-
-   // glPopMatrix();
-   switch(direction){
-      case(0):
-	 glTranslatef(0.0f,0.0f,-5.0f);
-    centerZ -= 5;
-	 break;
-      case(1):
-	 glTranslatef(-5.0f, 0.0f, 0.0f);
-    centerX -= 5;
-	 break;
-      case(2):
-	 glTranslatef(0.0f, 0.0f, 5.0f);
-    centerZ += 5;
-	 break;
-      case(3):
-	 glTranslatef(5.0f, 0.0f, 0.0f);
-    centerX += 5;
-   }
-   glPushMatrix();
-}
-
-void Robot::Turn(int turnDirection){
-   direction = turnDirection;
-
-   glLoadIdentity();
-   switch(direction){
-      case(0):
-	 glRotatef(0, 0.0f, 1.0f, 0.0f);
-	 break;
-      case(1):
-      glTranslatef(centerX, 0.0, centerZ);
-	 glRotatef(90, 0.0f, 1.0f, 0.0f);
-    glTranslatef(-centerX, 0.0, -centerZ);
-	 break;
-      case(2):
-	 glRotatef(180, 0.0f, 1.0f, 0.0f);
-	 break;
-      case(3):
-	 glRotatef(270, 0.0f, 1.0f, 0.0f);
-	 break;
-   }
-}
-
 void Robot::TurnHead(std::string direction){
    rotateHead = true;
 
