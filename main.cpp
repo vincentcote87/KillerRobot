@@ -196,7 +196,7 @@ void drawCity()
 }
 
 // randomly creates the buildings and stores them into a vector
-void initializeBuildings()
+void initBuildings()
 {
     int buildingID = 0;
     for (int i = cityMin_x; i < cityMax_x; i++)
@@ -269,7 +269,7 @@ void init(void) {
   glClearColor (0.10, 0.0, 0.40, 0.0);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_STENCIL_TEST);
-  initializeBuildings();
+  initBuildings();
 }
 
 // Keyboard functions
