@@ -27,6 +27,8 @@ class Building  {
 
     //Draw Function which houses the "schematics" for each building
     void Draw();
+
+    //Destroy Function which manages how to remove the building from the scene
     void Destroy();
 
 
